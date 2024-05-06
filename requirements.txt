@@ -1,0 +1,5 @@
+Flask==3.0.3
+essentia==2.1b6.dev1110
+essentia-tensorflow==2.1b6.dev1110
+numpy==1.26.4
+matplotlib==3.8.4
