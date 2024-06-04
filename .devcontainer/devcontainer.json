@@ -12,7 +12,19 @@
 		"ghcr.io/guiyomh/features/vim:0": {}
 	},
 	"forwardPorts": [8000],
-	"postCreateCommand": "pip install -r /workspaces/backend/requirements.txt"
+	"postCreateCommand": "pip install -r /workspaces/backend/requirements.txt",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"esbenp.prettier-vscode",
+				"ms-python.python",
+				"ritwickdey.LiveServer"
+			],
+			"settings":{
+				"extensions.verifySignature": false
+			}
+		}
+	}
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
