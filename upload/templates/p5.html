@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		{% load static %}
+		<link rel="stylesheet" href="{% static 'css/style.css' %}" />
+		<title>p5.js example</title>
+		<style>
+			/* body {
+				padding: 0;
+				margin: 0;
+				background-color: #1b1b1b;
+			} */
+			body,
+			html {
+				margin: 0;
+				padding: 0;
+				width: 100%;
+				height: 100%;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				background-color: #f0f0f0;
+			}
+
+			main {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				width: 100%;
+				height: 100%;
+			}
+
+			#sketch-container {
+				position: relative;
+			}
+		</style>
+		<script src="{% static 'p5/p5.min.js' %}"></script>
+		<!-- <script src="../addons/p5.sound.js"></script> -->
+		<script src="{% static 'js/sketch.js' %}"></script>
+	</head>
+
+	<body>
+		<main><div id="sketch-container"></div></main>
+	</body>
+</html>
