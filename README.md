@@ -8,7 +8,9 @@ vscode: [Visual Studio Code - Code Editing. Redefined](https://code.visualstudio
 
 docker: [Docker: Accelerated Container Application Development](https://www.docker.com/)
 
-直接照著下方步驟安裝：[使用 Visual Studio Code 搭配 Docker 容器做為開發環境 - Training | Microsoft Learn](https://learn.microsoft.com/zh-tw/training/modules/use-docker-container-dev-env-vs-code/)
+直接照著下方步驟安裝：[使用 Visual Studio Code 搭配 Docker 容器做為開發環境](https://learn.microsoft.com/zh-tw/training/modules/use-docker-container-dev-env-vs-code/)
+
+Docker Compose：[Use Docker Compose](https://code.visualstudio.com/docs/containers/docker-compose#_adding-docker-compose-support-to-your-project)
 
 只要將GitHub的連接換成這我們的就OKㄌ！
 
