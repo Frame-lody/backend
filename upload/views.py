@@ -1,17 +1,18 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from django.core.files.storage import FileSystemStorage
-from django.conf import settings
-from .forms import UploadFileForm
-
-from essentia.standard import MonoLoader, TensorflowPredictMusiCNN, TensorflowPredict2D
-import matplotlib.pyplot as plt
-
+import io
+import os
 # 中文編碼=============
 import sys
-import io
 
-import os
+import matplotlib.pyplot as plt
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse
+from django.shortcuts import redirect, render
+from essentia.standard import (MonoLoader, TensorflowPredict2D,
+                               TensorflowPredictMusiCNN)
+
+from .forms import UploadFileForm
+
 
 def home(request):
     # 如果是POST請求，就處理表單資料
@@ -45,3 +46,6 @@ def readFile(request, musicid):
     return render(request, "readFile.html", locals())
 
 # Create your views here.
+
+def p5(request):
+    return render(request, "p5.html", locals())
