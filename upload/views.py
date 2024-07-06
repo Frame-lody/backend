@@ -1,6 +1,5 @@
 import io
 import os
-# 中文編碼=============
 import sys
 
 import matplotlib.pyplot as plt
@@ -12,7 +11,7 @@ from essentia.standard import (MonoLoader, TensorflowPredict2D,
                                TensorflowPredictMusiCNN)
 
 from .forms import UploadFileForm
-
+from .models import music
 
 def home(request):
     # 如果是POST請求，就處理表單資料
@@ -45,7 +44,33 @@ def readFile(request, musicid):
 
     return render(request, "readFile.html", locals())
 
-# Create your views here.
-
 def p5(request):
     return render(request, "p5.html", locals())
+
+def sortable(request):
+    music_list = music.objects.all()
+    return render(request, "sortable.html", locals())
+
+def insert(request):
+    data = {
+    "intro": "tree",
+    "verse": "flower",
+    "chorus": "rain",
+    "bridge": "wind",
+    "outro": "sunlight"
+    }
+    my_model_instance = music.objects.create(user=request.user, data=data)
+    my_model_instance.save()
+
+    my_model_show = music.objects.all().order_by('-id')  #讀取資料表, 依 id 遞減排序
+    return render(request, "insert.html", locals())
+
+
+def search(request):
+    # 假設你要根據某個條件來搜尋，例如搜尋名稱為 'example' 的音樂
+    # 如果沒有特定條件，直接使用 .all() 然後取第一筆資料
+    search_result = music.objects.filter(user=request.user).first()
+
+    # 如果有特定條件，可以在 filter() 中加入條件，例如 music.objects.filter(artist='John').first()
+
+    return render(request, "search.html", {'search_result': search_result})

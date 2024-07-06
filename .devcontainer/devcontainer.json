@@ -4,23 +4,24 @@
 	"name": "Python 3",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"build": {
-        // Path is relative to the devcontainer.json file.
-        "dockerfile": "Dockerfile"
-    },
+		// Path is relative to the devcontainer.json file.
+		"dockerfile": "Dockerfile"
+	},
 	"features": {
 		"ghcr.io/devcontainers-contrib/features/zsh-plugins:0": {},
 		"ghcr.io/guiyomh/features/vim:0": {}
 	},
 	"forwardPorts": [8000],
-	"postCreateCommand": "pip install -r /workspaces/backend/requirements.txt",
+	"postCreateCommand": "pip --default-time=100 install -r /workspaces/backend/requirements.txt",
 	"customizations": {
 		"vscode": {
 			"extensions": [
 				"esbenp.prettier-vscode",
 				"ms-python.python",
-				"ritwickdey.LiveServer"
+				"ritwickdey.LiveServer",
+				"batisteo.vscode-django"
 			],
-			"settings":{
+			"settings": {
 				"extensions.verifySignature": false
 			}
 		}

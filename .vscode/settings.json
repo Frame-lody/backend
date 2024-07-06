@@ -10,5 +10,13 @@
 		"editor.insertSpaces": true,
 		"editor.detectIndentation": true,
 		"editor.tabSize": 4
+	},
+	"emmet.triggerExpansionOnTab": true,
+	"emmet.includeLanguages": {
+		"javascript": "javascriptreact",
+		"vue-html": "html",
+		"django-html": "html",
+		"razor": "html",
+		"plaintext": "jade"
 	}
 }

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>SortableJS with Multiple Columns and Delete</title>
+		<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+		<style>
+			#container {
+				display: flex;
+				justify-content: space-between;
+				width: 1000px;
+				margin: 20px auto;
+			}
+			#left-column {
+				width: 20%;
+				padding: 10px;
+				border: 1px solid #ccc;
+				min-height: 200px;
+				list-style: none;
+			}
+			.right-column {
+				width: 25%;
+				padding: 10px;
+				border: 1px solid #ccc;
+				min-height: 200px;
+				list-style: none;
+				margin-left: 10px;
+			}
+			li {
+				margin: 5px 0;
+				padding: 10px;
+				border: 1px solid #ccc;
+				background-color: #f9f9f9;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				cursor: move;
+			}
+			.delete-button {
+				margin-left: 10px;
+				cursor: pointer;
+				color: red;
+				display: none;
+			}
+			li:hover .delete-button {
+				display: inline;
+			}
+			.ghost {
+				opacity: 0.4;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="container">
+			<ul id="left-column">
+				<li>花</li>
+				<li>魚</li>
+				<li>綿羊</li>
+			</ul>
+			<ul id="right-column-1" class="right-column">
+				<div>前奏</div>
+			</ul>
+			<ul id="right-column-2" class="right-column">
+				<div>主歌</div>
+			</ul>
+			<ul id="right-column-3" class="right-column">
+				<div>副歌</div>
+			</ul>
+		</div>
+		<div style="text-align: center; margin-top: 20px">
+			<label for="max-items">每個右邊欄位最大項目數量：</label>
+			<input type="number" id="max-items" value="5" min="1" />
+		</div>
+		<script>
+			// document.addEventListener('DOMContentLoaded', function() {
+			// 左邊欄位不可排序，只能複製到右邊欄位
+			new Sortable(document.getElementById('left-column'), {
+				group: {
+					name: 'shared',
+					pull: 'clone',
+					put: false,
+				},
+				sort: false,
+				ghostClass: 'ghost',
+			});
+
+			// 為所有右邊欄位初始化 SortableJS
+			var rightColumns = document.querySelectorAll('.right-column');
+			rightColumns.forEach(function (column) {
+				new Sortable(column, {
+					group: {
+						name: 'shared',
+						pull: false,
+						put: true,
+					},
+					animation: 150,
+					ghostClass: 'ghost',
+					onAdd: function (evt) {
+						var maxItems = parseInt(document.getElementById('max-items').value, 10);
+						var rightColumn = evt.to;
+						if (rightColumn.children.length > maxItems + 1) {
+							// 加1是因為包含了標題欄位
+							rightColumn.removeChild(evt.item);
+							alert('此欄位已滿，不能再添加更多項目');
+						}
+
+                        // 新增刪除鍵
+                        const items = document.querySelectorAll('.right-column li');
+						items.forEach((item) => {
+							if (!item.querySelector('.delete-btn')) {
+								const deleteButton = document.createElement('button');
+								deleteButton.innerText = 'Delete';
+								deleteButton.classList.add('delete-btn');
+								deleteButton.addEventListener('click', () => {
+									item.remove();
+								});
+								item.appendChild(deleteButton);
+							}
+						});
+					},
+					onMove: function (evt) {
+
+					},
+				});
+			});
+
+			// 添加刪除功能
+			document.getElementById('container').addEventListener('click', function (event) {
+				if (event.target.classList.contains('delete-button')) {
+					var item = event.target.closest('li');
+					item.parentNode.removeChild(item);
+				}
+			});
+		</script>
+	</body>
+</html>

@@ -17,7 +17,7 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 from upload import views
 
@@ -29,6 +29,9 @@ urlpatterns = [
     # path('hi/<username>/', views.hiname),      # 傳遞字串參數 username
     # path('age/<int:year>/', views.age),        # 傳遞數值參數 year
     # path('hello/', views.hello_view),
+    # path('accounts/', include('django.contrib.auth.urls')) # 使用 Django 內建的登入登出頁面
+    path('users/', include('users.urls')),
+    path('upload/', include('upload.urls')),
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
 
 
