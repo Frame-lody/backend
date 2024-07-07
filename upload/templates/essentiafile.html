@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Test</title>
-	</head>
-	<body>
-		<form action='/' method="POST" enctype="multipart/form-data">
-			{% csrf_token %}
-			<input type=file name="file" required>
-			<input type=submit value="開始上傳">
-		</form>
-		<hr>
-		以下是目前伺服器上的檔案：<br>
-		{% for filename in mediafiles %}
-		{{ filename }}<br>
-		{% endfor %}
-	</body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Test</title>
+    </head>
+    <body>
+        <form action='/' method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type=file name="file" required>
+            <input type=submit value="開始上傳">
+        </form>
+        <hr>
+        以下是目前伺服器上的檔案：
+        <br>
+        {% for filename in mediafiles %}
+            {{ filename }}
+            <br>
+        {% endfor %}
+    </body>
 </html>
