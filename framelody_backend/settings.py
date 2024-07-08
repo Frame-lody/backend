@@ -38,17 +38,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions', # session 管理
     'django.contrib.messages', # 訊息管理
     'django.contrib.staticfiles', # 靜態檔案管理
-    'upload'
+    'channels', # Django Channels
+    'upload',
+    'users'
 ]
 
+ASGI_APPLICATION = 'framelody_backend.asgi.application'
+
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.security.SecurityMiddleware', # 安全性管理
+    'django.contrib.sessions.middleware.SessionMiddleware', # session 管理
+    'django.middleware.common.CommonMiddleware', # 通用管理
+    'django.middleware.csrf.CsrfViewMiddleware', # CSRF 防護
+    'django.contrib.auth.middleware.AuthenticationMiddleware', # 認證管理
+    'django.contrib.messages.middleware.MessageMiddleware', # 訊息管理
+    'django.middleware.clickjacking.XFrameOptionsMiddleware', # 防止點擊劫持
 ]
 
 ROOT_URLCONF = 'framelody_backend.urls'
@@ -56,7 +60,7 @@ ROOT_URLCONF = 'framelody_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['./templates',],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
