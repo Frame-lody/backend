@@ -61,12 +61,25 @@
             </ul>
             <ul id="right-column-1" class="right-column">
                 <div>前奏</div>
+                <li>
+                    {{ music_list.data.intro }}
+                    <button class="delete-btn">Delete</button>
+                </li>
+                {% comment %} {% if music_list.data.intro %}<div>yess</div>{% endif %} {% endcomment %}
             </ul>
             <ul id="right-column-2" class="right-column">
                 <div>主歌</div>
+                <li>
+                    {{ music_list.data.verse }}
+                    <button class="delete-btn">Delete</button>
+                </li>
             </ul>
             <ul id="right-column-3" class="right-column">
                 <div>副歌</div>
+                <li>
+                    {{ music_list.data.chorus }}
+                    <button class="delete-btn">Delete</button>
+                </li>
             </ul>
         </div>
         <div style="text-align: center; margin-top: 20px">
