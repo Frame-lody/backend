@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from django.contrib.auth.decorators import login_required
 from essentia.standard import (MonoLoader, TensorflowPredict2D,
                                TensorflowPredictMusiCNN)
 
@@ -47,14 +48,21 @@ def readFile(request, musicid):
 def p5(request):
     return render(request, "p5.html", locals())
 
-def sortable(request):
-    music_list = music.objects.all()
-    return render(request, "sortable.html", locals())
+@login_required
+def music_detail(request, music_id):
+    music_list = music.objects.get(id=music_id)
+    return render(request, "music_detail.html", locals())
+
+@login_required
+def showmusic(request):
+    user_id = request.user.id
+    music_list = music.objects.filter(user_id=user_id)
+    return render(request, "showmusic.html", locals())
 
 def insert(request):
     data = {
-    "intro": "tree",
-    "verse": "flower",
+    "intro": "apple",
+    "verse": "banana",
     "chorus": "rain",
     "bridge": "wind",
     "outro": "sunlight"

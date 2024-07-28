@@ -1,0 +1,14 @@
+{% extends "base_generic.html" %}
+{% block content %}
+<div>
+    {% for music in music_list %}
+        <div>
+            <a href="{% url 'music_detail' music.id %}">
+            {{ music.data }}
+            <span>{{ music.user }}</span>
+            <span>{{ music.last_modified }}</span>
+        </a>
+        </div>
+    {% endfor %}
+</div>
+{% endblock content %}

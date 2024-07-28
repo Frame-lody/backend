@@ -141,3 +141,7 @@ ESSENTIA_PATH = BASE_DIR / "essentia_model"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+LOGIN_URL = '/users/login/' # login_required 尚未登入 將跳轉至登入頁面
+# LOGIN_REDIRECT_URL = '/users/redirect/' # 登入成功後跳轉的頁面
