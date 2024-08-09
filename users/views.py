@@ -1,13 +1,12 @@
-from django.shortcuts import render, redirect
-
+from django.contrib import auth, messages
 # Create your views here.
 from django.contrib.auth.forms import UserCreationForm
-from django.views.generic import TemplateView, CreateView
-from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib import auth
+from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, TemplateView
+
 from .forms import RegisterForm
-from django.contrib import messages
 
 # def sign_up(request):
 #     return render(request, 'sign_up.html')

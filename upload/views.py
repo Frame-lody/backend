@@ -3,20 +3,19 @@ import os
 import sys
 
 import matplotlib.pyplot as plt
+from celery.result import AsyncResult
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
-from django.contrib.auth.decorators import login_required
 from essentia.standard import (MonoLoader, TensorflowPredict2D,
                                TensorflowPredictMusiCNN)
 
 from .forms import UploadFileForm
 from .models import music
-
-
 from .tasks import long_running_task
-from celery.result import AsyncResult
+
 
 def home(request):
     # 如果是POST請求，就處理表單資料
@@ -108,6 +107,7 @@ def search(request):
 #     return render(request, 'celery.html')
 
 from .models import TaskStatus
+
 
 # 執行上傳音檔工作
 # GET -> 可以上傳音檔(目前是按按鈕模擬long running task)
