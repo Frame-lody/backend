@@ -18,7 +18,8 @@
                 "ritwickdey.LiveServer",
                 "batisteo.vscode-django",
                 "bibhasdn.django-html",
-                "monosans.djlint"
+                "monosans.djlint",
+                "naumovs.color-highlight"
             ],
             "settings": {
                 "extensions.verifySignature": false,

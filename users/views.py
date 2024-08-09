@@ -6,12 +6,14 @@ from django.views.generic import TemplateView, CreateView
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import auth
+from .forms import RegisterForm
+from django.contrib import messages
 
 # def sign_up(request):
 #     return render(request, 'sign_up.html')
 
 class SignUpView(CreateView):
-    form_class = UserCreationForm
+    form_class = RegisterForm
     success_url = reverse_lazy('login')
     template_name = 'sign_up.html'
 

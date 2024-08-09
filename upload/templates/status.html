@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task Status</title>
+</head>
+<body>
+    <h1>Task Status</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Task ID</th>
+                <th>Status</th>
+                <th>Result</th>
+                <th>Created</th>
+                <th>Modified</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+            <tr>
+                <td>{{ task.task_id }}</td>
+                <td>{{ task.status }}</td>
+                <td>{{ task.result }}</td>
+                <td>{{ task.date_created }}</td>
+                <td>{{ task.date_modified }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'task_status' %}">Refresh</a>
+</body>
+</html>

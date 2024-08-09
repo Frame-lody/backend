@@ -5,13 +5,17 @@ import sys
 import matplotlib.pyplot as plt
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from essentia.standard import (MonoLoader, TensorflowPredict2D,
                                TensorflowPredictMusiCNN)
 
 from .forms import UploadFileForm
 from .models import music
+
+
+from .tasks import long_running_task
+from celery.result import AsyncResult
 
 def home(request):
     # 如果是POST請求，就處理表單資料
@@ -74,3 +78,35 @@ def search(request):
     # 如果有特定條件，可以在 filter() 中加入條件，例如 music.objects.filter(artist='John').first()
 
     return render(request, "search.html", {'search_result': search_result})
+
+
+# def start_task(request):
+#     task = long_running_task.delay()
+#     return JsonResponse({'task_id': task.id})
+
+# def get_task_status(request, task_id):
+#     task_result = AsyncResult(task_id)
+#     if task_result.state == 'SUCCESS':
+#         result = task_result.result
+#     else:
+#         result = task_result.state
+#     return JsonResponse({'status': result})
+
+# def celery(request):
+#     return render(request, 'celery.html')
+
+from .models import TaskStatus
+
+# 執行上傳音檔工作
+# GET -> 可以上傳音檔(目前是按按鈕模擬long running task)
+# POST -> 將工作實際丟到celery執行，並且redirect到"task_status"
+def celery(request):
+    if request.method == "POST":
+        task = long_running_task.delay()
+        TaskStatus.objects.create(task_id=task.id, status='PENDING')
+        return redirect('task_status')
+    return render(request, 'celery.html')
+
+def task_status(request):
+    tasks = TaskStatus.objects.all()
+    return render(request, 'status.html', {'tasks': tasks})

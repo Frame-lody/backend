@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions', # session 管理
     'django.contrib.messages', # 訊息管理
     'django.contrib.staticfiles', # 靜態檔案管理
+    # 'django.contrib.messages',
     'channels', # Django Channels
     'upload',
     'users'
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware', # 認證管理
     'django.contrib.messages.middleware.MessageMiddleware', # 訊息管理
     'django.middleware.clickjacking.XFrameOptionsMiddleware', # 防止點擊劫持
+    # 'django.contrib.messages.middleware.MessageMiddleware',
 ]
 
 ROOT_URLCONF = 'framelody_backend.urls'
@@ -144,9 +146,20 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # celery
-BROKER_URL = 'redis://myredis:6379'
+CELERY_BROKER_URL = 'redis://myredis:6379'
 CELERY_RESULT_BACKEND = 'redis://myredis:6379'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Taipei'
+
+# # 配置messages標籤
+# from django.contrib.messages import constants as messages
+
+# MESSAGE_TAGS = {
+#     messages.DEBUG: 'debug',
+#     messages.INFO: 'info',
+#     messages.SUCCESS: 'success',
+#     messages.WARNING: 'warning',
+#     messages.ERROR: 'danger',
+# }

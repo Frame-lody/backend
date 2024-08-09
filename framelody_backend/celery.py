@@ -5,6 +5,17 @@ from django.conf import settings
 os.environ.setdefault('DJANGO_SETTINGS_MODULE','framelody_backend.settings')
 # 創建實例
 app = Celery("framelody_backend")
-app.config_from_object('django.conf:settings')
-# 查找在 INSTALLED_APPS 設置的異步任務
-app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
+
+# Using a string here means the worker doesn't have to serialize
+# the configuration object to child processes.
+# - namespace='CELERY' means all celery-related configuration keys
+#   should have a `CELERY_` prefix.
+app.config_from_object('django.conf:settings', namespace='CELERY')
+
+# Load task modules from all registered Django apps.
+app.autodiscover_tasks()
+
+
+@app.task(bind=True, ignore_result=True)
+def debug_task(self):
+    print(f'Request: {self.request!r}')
