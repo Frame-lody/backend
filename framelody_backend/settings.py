@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions', # session 管理
     'django.contrib.messages', # 訊息管理
     'django.contrib.staticfiles', # 靜態檔案管理
+    # 'django.contrib.messages',
     'channels', # Django Channels
     'upload',
     'users'
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware', # 認證管理
     'django.contrib.messages.middleware.MessageMiddleware', # 訊息管理
     'django.middleware.clickjacking.XFrameOptionsMiddleware', # 防止點擊劫持
+    # 'django.contrib.messages.middleware.MessageMiddleware',
 ]
 
 ROOT_URLCONF = 'framelody_backend.urls'
@@ -142,6 +144,24 @@ ESSENTIA_PATH = BASE_DIR / "essentia_model"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 LOGIN_URL = '/users/login/' # login_required 尚未登入 將跳轉至登入頁面
 # LOGIN_REDIRECT_URL = '/users/redirect/' # 登入成功後跳轉的頁面
+
+# celery
+CELERY_BROKER_URL = 'redis://myredis:6379'
+CELERY_RESULT_BACKEND = 'redis://myredis:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Taipei'
+
+# # 配置messages標籤
+# from django.contrib.messages import constants as messages
+
+# MESSAGE_TAGS = {
+#     messages.DEBUG: 'debug',
+#     messages.INFO: 'info',
+#     messages.SUCCESS: 'success',
+#     messages.WARNING: 'warning',
+#     messages.ERROR: 'danger',
+# }

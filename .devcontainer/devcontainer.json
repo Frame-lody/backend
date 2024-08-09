@@ -1,18 +1,15 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/python
 {
-    "name": "Python 3",
+    "name": "Django and redis",
     // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-    "build": {
-        // Path is relative to the devcontainer.json file.
-        "dockerfile": "Dockerfile"
-    },
-    "features": {
-        "ghcr.io/devcontainers-contrib/features/zsh-plugins:0": {},
-        "ghcr.io/guiyomh/features/vim:0": {}
-    },
-    "forwardPorts": [8000],
-    "postCreateCommand": "pip --default-time=100 install -r /workspaces/backend/requirements.txt",
+    // "build": {
+    //     // Path is relative to the devcontainer.json file.
+    //     "dockerfile": "Dockerfile"
+    // },
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "web",
+    "workspaceFolder": "/workspace",
     "customizations": {
         "vscode": {
             "extensions": [
@@ -21,19 +18,28 @@
                 "ritwickdey.LiveServer",
                 "batisteo.vscode-django",
                 "bibhasdn.django-html",
-                "monosans.djlint"
+                "monosans.djlint",
+                "naumovs.color-highlight"
             ],
             "settings": {
-                "extensions.verifySignature": false
+                "extensions.verifySignature": false,
+                "git.path": "/usr/bin/git"
             }
+
         }
-    }
+    },
+    // "features": {
+    //     // "ghcr.io/devcontainers-contrib/features/zsh-plugins:0": {},
+    //     "ghcr.io/guiyomh/features/vim:0": {}
+    // },
+    "forwardPorts": [8000, 5555],
+    "postCreateCommand": "git config core.fileMode false"
 
     // Features to add to the dev container. More info: https://containers.dev/features.
     // "features": {},
 
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
-    // "forwardPorts": [],
+    // "forwardPorts": ["8000:8000", "5555:5555"yt]
 
     // Use 'postCreateCommand' to run commands after the container is created.
     // "postCreateCommand": "pip3 install --user -r requirements.txt",

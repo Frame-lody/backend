@@ -1,0 +1,112 @@
+body {
+    font-family: Arial, sans-serif;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(30, 162, 162, 1) 53.9%, #2C0867 100%);
+}
+.container {
+    padding: 20px;
+    width: 400px;
+    text-align: center;
+}
+h1 {
+    margin-bottom: 20px;
+    color: #fff;
+}
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.form-group label {
+    margin-bottom: 5px;
+    color: #fff;
+    white-space: nowrap;
+    padding: 0 10px;
+}
+.form-group input {
+    width: 19rem;
+    height: 3rem;
+    padding: 8px;
+    box-sizing: border-box;
+
+    border: none;
+    border-radius: 10px;
+    background-color : rgba(255, 255, 255, 0.5);
+
+    outline:none;
+}
+.form-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.form-actions button,
+.form-actions input[type='submit'] {
+    padding: 5px 10px;
+    border: none;
+    font-weight: bold;
+    background-color: #D9D9D9;
+    color: #000;
+    cursor: pointer;
+    border-radius: 15px;
+    text-decoration: none;
+    font-size: 1.1rem;
+    width: 6rem;
+}
+.form-actions a {
+    color: #000;
+    padding: 5px 10px;
+    width: 6rem;
+    background-color: #D9D9D9;
+    text-decoration: none;
+    border-radius: 15px;
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+/* .form-actions button:hover,
+.form-actions input[type='submit']:hover {
+    background-color: #cbe3fd;
+} */
+.forget-password {
+    display: flex;
+    justify-content: flex-end;
+    align-items: right;
+    margin-bottom: 1.5rem;
+}
+.forget-password a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 0.8rem;
+}
+
+.errors {
+    padding: 20px;
+    background-color: #fff; /* 白色背景 */
+    border: 1px solid #f5c2c2; /* 淡紅色邊框 */
+    border-radius: 10px; /* 圓角 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 添加陰影 */
+    margin: 20px 0;
+}
+
+.errors ul {
+    list-style-type: none; /* 移除預設列表樣式 */
+    padding: 0;
+    margin: 0;
+}
+
+.errors li {
+    color: #d9534f; /* 紅色文字 */
+    padding: 10px 0; /* 上下間距 */
+    border-bottom: 1px solid #f5c2c2; /* 分隔線 */
+}
+
+.errors li:last-child {
+    border-bottom: none; /* 移除最後一個li的分隔線 */
+}

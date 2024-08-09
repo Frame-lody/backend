@@ -1,0 +1,48 @@
+{% comment %} <!DOCTYPE html>
+<html>
+    <head>
+        <title>Celery Task</title>
+    </head>
+    <body>
+        <button id="start-task">Start Task</button>
+        <div id="task-status">Status: Not started</div>
+        <script>
+        document.getElementById('start-task').addEventListener('click', function() {
+            fetch('/upload/start-task/')
+                .then(response => response.json())
+                .then(data => {
+                    const taskId = data.task_id;
+                    const statusDiv = document.getElementById('task-status');
+
+                    function checkStatus() {
+                        fetch(`/upload/task-status/${taskId}/`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.status === 'SUCCESS' || data.status === 'FAILURE') {
+                                    statusDiv.innerHTML = `Status: ${data.status}`;
+                                } else {
+                                    statusDiv.innerHTML = `Status: ${data.status}`;
+                                    setTimeout(checkStatus, 1000);
+                                }
+                            });
+                    }
+
+                    checkStatus();
+                });
+        });
+</script>
+    </body>
+</html> {% endcomment %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Long Running Task</title>
+    </head>
+    <body>
+        <h1>Start Long Running Task</h1>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit">Start Task</button>
+        </form>
+    </body>
+</html>

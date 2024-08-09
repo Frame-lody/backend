@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+
+  web:
+    build:
+      context: ..
+      dockerfile: .devcontainer/django/Dockerfile
+    volumes:
+      - ..:/workspace:cached
+    # ports:
+    #   - "8000:8000"
+    #   - "5555:5555"
+    command: sleep infinity
+    depends_on:
+      - myredis
+
+
+  myredis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    # container_name: my_redis
+    # command: sleep infinity
