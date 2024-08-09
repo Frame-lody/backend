@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
+from django.contrib.auth.decorators import login_required
 from essentia.standard import (MonoLoader, TensorflowPredict2D,
                                TensorflowPredictMusiCNN)
 
@@ -47,6 +48,17 @@ def readFile(request, musicid):
     music = str(predictions)
 
     return render(request, "readFile.html", locals())
+
+@login_required
+def music_detail(request, music_id):
+    music_list = music.objects.get(id=music_id)
+    return render(request, "music_detail.html", locals())
+
+@login_required
+def showmusic(request):
+    user_id = request.user.id
+    music_list = music.objects.filter(user_id=user_id)
+    return render(request, "showmusic.html", locals())
 
 def p5(request):
     return render(request, "p5.html", locals())

@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 # Create your views here.
 from django.contrib.auth.forms import UserCreationForm
@@ -25,7 +25,9 @@ def login(request):
     user = auth.authenticate(username=username, password=password)
     if user is not None and user.is_active:
         auth.login(request, user)
-        return HttpResponseRedirect('/users/main_page')
+        # return HttpResponseRedirect('/users/main_page')
+        next_url = request.GET.get('next', '/users/main_page')
+        return redirect(next_url)
     else:
         return render(request, 'login.html', locals())
 
