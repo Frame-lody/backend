@@ -139,13 +139,29 @@
 				});
 			});
 
+			window.onload = function() {
+				// 取得所有的刪除按鈕
+				const deleteButtons = document.querySelectorAll('.delete-btn');
+
+				// 為每個刪除按鈕添加點擊事件監聽器
+				deleteButtons.forEach(button => {
+					button.addEventListener('click', function() {
+						// 獲取當前按鈕的父級 <li> 元素
+						const listItem = this.parentElement;
+
+						// 移除該 <li> 元素
+						listItem.remove();
+					});
+				});
+			};
+
 			// 添加刪除功能
-			document.getElementById('container').addEventListener('click', function (event) {
-				if (event.target.classList.contains('delete-button')) {
-					var item = event.target.closest('li');
-					item.parentNode.removeChild(item);
-				}
-			});
+			//document.getElementById('container').addEventListener('click', function (event) {
+			//	if (event.target.classList.contains('delete-button')) {
+			//		var item = event.target.closest('li');
+			//		item.parentNode.removeChild(item);
+			//	}
+			//});
 
         </script>
     </body>

@@ -23,9 +23,9 @@ from upload import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home),
+    path('', views.home, name='home'),
     path('p5/', views.p5),
-    path('readFile/<str:musicid>/', views.readFile), # 動態路由
+    # path('readFile/<str:musicid>/', views.readFile), # 動態路由
     # path('accounts/', include('django.contrib.auth.urls')) # 使用 Django 內建的登入登出頁面
     path('users/', include('users.urls')),
     path('upload/', include('upload.urls')),

@@ -5,24 +5,37 @@
 </head>
 <body>
     <h1>Task Status</h1>
+    <a href="{% url 'home' %}">Go to Home</a>
     <table>
         <thead>
             <tr>
+                <th>User</th>
+                <th>Music Name</th>
                 <th>Task ID</th>
                 <th>Status</th>
                 <th>Result</th>
                 <th>Created</th>
                 <th>Modified</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
             {% for task in tasks %}
             <tr>
+                <td>{{ task.user }}</td>
+                <td>{{ task.music_name }}</td>
                 <td>{{ task.task_id }}</td>
                 <td>{{ task.status }}</td>
                 <td>{{ task.result }}</td>
                 <td>{{ task.date_created }}</td>
                 <td>{{ task.date_modified }}</td>
+                <td>
+                    <form method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="task_id" value="{{ task.task_id }}">
+                        <button type="submit" name="delete">Delete</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>

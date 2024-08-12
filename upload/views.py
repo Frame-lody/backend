@@ -16,37 +16,37 @@ from .forms import UploadFileForm
 from .models import music
 from .tasks import long_running_task
 
+from .models import TaskStatus
 
+@login_required
 def home(request):
     # 如果是POST請求，就處理表單資料
     if request.method=="POST":
         uploaded_file = request.FILES['file']
         fss = FileSystemStorage()
         file = fss.save(uploaded_file.name, uploaded_file)
-        return redirect("/")
+        # 將音樂分析資訊存到資料庫
+        user_id = request.user.id
+        task = long_running_task.delay(musicid=uploaded_file.name, user_id=user_id, music_name=uploaded_file.name)
+        TaskStatus.objects.create(user=request.user, task_id=task.id, status='PENDING', music_name=uploaded_file.name)
+        return redirect('task_status')
     # 將所有media資料夾裡的檔案列出來
     mediafiles = os.listdir(settings.MEDIA_ROOT)
     return render(request, "upload.html", locals())
 
-def readFile(request, musicid):
-    # 去定義essentia model路徑，從settings.py裡面拿
-    essentia_path = settings.ESSENTIA_PATH
+def task_status(request):
+    # 若使用者按下"delete"按鈕，則刪除該筆task
+    if "delete" in request.POST:
+        task_id = request.POST.get("task_id")
+        task = TaskStatus.objects.filter(task_id=task_id)
+        task.delete()
+        return redirect('task_status')
+    user_id = request.user.id
+    tasks = TaskStatus.objects.filter(user_id=user_id)
+    return render(request, 'status.html', {'tasks': tasks})
 
-    # 這裡可以跑essentia的code
-    # os.path.join(settings.MEDIA_ROOT, musicid) 是音樂檔案的路徑
-    # os.path.join(essentia_path, 'msd-musicnn-1.pb') 是模型的路徑
-    audio = MonoLoader(filename=os.path.join(settings.MEDIA_ROOT, musicid), sampleRate=48000, resampleQuality=4)()
-    embedding_model = TensorflowPredictMusiCNN(graphFilename=os.path.join(essentia_path, 'msd-musicnn-1.pb'), output='model/dense/BiasAdd')
-    embeddings = embedding_model(audio)
-
-    model = TensorflowPredict2D(graphFilename=os.path.join(essentia_path, 'deam-msd-musicnn-2.pb'), output='model/Identity')
-    predictions = model(embeddings)
-
-    # local 變數
-    thedata = "123"
-    music = str(predictions)
-
-    return render(request, "readFile.html", locals())
+# def readFile(request, musicid):
+#     return render(request, "readFile.html", locals())
 
 @login_required
 def music_detail(request, music_id):
@@ -106,19 +106,14 @@ def search(request):
 # def celery(request):
 #     return render(request, 'celery.html')
 
-from .models import TaskStatus
-
 
 # 執行上傳音檔工作
 # GET -> 可以上傳音檔(目前是按按鈕模擬long running task)
 # POST -> 將工作實際丟到celery執行，並且redirect到"task_status"
-def celery(request):
-    if request.method == "POST":
-        task = long_running_task.delay()
-        TaskStatus.objects.create(task_id=task.id, status='PENDING')
-        return redirect('task_status')
-    return render(request, 'celery.html')
+# def celery(request):
+#     if request.method == "POST":
+#         task = long_running_task.delay()
+#         TaskStatus.objects.create(task_id=task.id, status='PENDING')
+#         return redirect('task_status')
+#     return render(request, 'celery.html')
 
-def task_status(request):
-    tasks = TaskStatus.objects.all()
-    return render(request, 'status.html', {'tasks': tasks})

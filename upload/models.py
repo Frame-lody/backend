@@ -17,7 +17,9 @@ class music(models.Model):
 
 
 class TaskStatus(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True) # 這個音樂是哪個使用者上傳的
     task_id = models.CharField(max_length=255, unique=True)
+    music_name = models.CharField(max_length=255, null=True)
     status = models.CharField(max_length=50)
     result = models.TextField(null=True, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
