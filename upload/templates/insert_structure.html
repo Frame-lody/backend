@@ -1,0 +1,9 @@
+{% extends "base_generic.html" %}
+{% block content %}
+<form method="POST" action="{% url 'insert_structure' %}">
+    {% csrf_token %}
+    <label for="music_name">Music Name:</label>
+    <input type="text" id="music_name" name="music_name" required>
+    <button type="submit">Submit</button>
+</form>
+{% endblock content %}

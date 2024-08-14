@@ -27,3 +27,12 @@ class TaskStatus(models.Model):
 
     def __str__(self):
         return self.task_id
+
+
+class AudioAnalysis(models.Model):
+    music_name = models.CharField(max_length=255)
+    bpm = models.IntegerField()
+    segments = models.JSONField()
+
+    def __str__(self):
+        return self.music_name

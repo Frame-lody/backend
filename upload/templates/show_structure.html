@@ -1,0 +1,9 @@
+{% extends "base_generic.html" %}
+{% block content %}
+<p>Music Name: {{ audio_analysis.segments }}</p>
+
+{{ audio_analysis.segments|json_script:"audio_analysis.segments" }}
+<script>
+    const foo = JSON.parse(document.getElementById('audio_analysis.segments').textContent);
+</script>
+{% endblock content %}
