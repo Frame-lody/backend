@@ -154,6 +154,7 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Taipei'
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
 # # 配置messages標籤
 # from django.contrib.messages import constants as messages
