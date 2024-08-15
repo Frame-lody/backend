@@ -13,10 +13,11 @@ from essentia.standard import (MonoLoader, TensorflowPredict2D,
                                TensorflowPredictMusiCNN)
 
 from .forms import UploadFileForm
-from .models import music
+from .models import TaskStatus, music
 from .tasks import long_running_task
 
-from .models import TaskStatus
+# from celery.task.control import revoke
+
 
 @login_required
 def home(request):
@@ -27,8 +28,8 @@ def home(request):
         file = fss.save(uploaded_file.name, uploaded_file)
         # 將音樂分析資訊存到資料庫
         user_id = request.user.id
-        task = long_running_task.delay(musicid=uploaded_file.name, user_id=user_id, music_name=uploaded_file.name)
-        TaskStatus.objects.create(user=request.user, task_id=task.id, status='PENDING', music_name=uploaded_file.name)
+        task = long_running_task.delay(musicid=file, user_id=user_id, music_name=file)
+        TaskStatus.objects.create(user=request.user, task_id=task.id, status='PENDING', music_name=file)
         return redirect('task_status')
     # 將所有media資料夾裡的檔案列出來
     mediafiles = os.listdir(settings.MEDIA_ROOT)
@@ -40,6 +41,7 @@ def task_status(request):
         task_id = request.POST.get("task_id")
         task = TaskStatus.objects.filter(task_id=task_id)
         task.delete()
+        # revoke(task_id, terminate=True)
         return redirect('task_status')
     user_id = request.user.id
     tasks = TaskStatus.objects.filter(user_id=user_id)
@@ -90,11 +92,14 @@ def search(request):
 
     return render(request, "search.html", {'search_result': search_result})
 
-from dataclasses import asdict # 引用dataclasses模組下的asdict函數
-import json # 引用json模組
-from allin1.typings import * # 去引用allin1資料夾下的typings.py檔案（型別）
-from pathlib import PosixPath # 引用pathlib模組下的PosixPath類別
+import json  # 引用json模組
+from dataclasses import asdict  # 引用dataclasses模組下的asdict函數
+from pathlib import PosixPath  # 引用pathlib模組下的PosixPath類別
+
+from allin1.typings import *  # 去引用allin1資料夾下的typings.py檔案（型別）
+
 from .models import AudioAnalysis
+
 
 def insert_structure(request):
     if request.method == "POST":
@@ -127,11 +132,11 @@ def insert_structure(request):
         segments_dict = [asdict(segment) for segment in result.segments]
 
         # # 將字典列表轉換為 JSON 字符串
-        segments_json = json.dumps(segments_dict) # 將python對象(Object) 編碼成JSON格式的字符串
+        #segments_json = json.dumps(segments_dict) # 將python對象(Object) 編碼成JSON格式的字符串
         # # 可以將segments_json保存到資料庫中
 
         # 若要從資料庫中讀取segments_json，則可以使用以下程式碼（python）
-        segments_final = json.loads(segments_json) # 將JSON字符串解碼成python對象(Object)
+        #segments_final = json.loads(segments_json) # 將JSON字符串解碼成python對象(Object)
         # print(cool[0]["label"])
         # print(result.bpm)
 

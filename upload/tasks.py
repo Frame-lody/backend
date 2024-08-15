@@ -1,21 +1,23 @@
-# from celery import shared_task
-# import time
-
-# @shared_task
-# def long_running_task():
-#     time.sleep(10)  # 模擬長時間
-#     return '任務完成'
-
+import os
+import time
 
 from celery import shared_task
-import time
-from .models import TaskStatus
 from celery.exceptions import Ignore
-from essentia.standard import MonoLoader, TensorflowPredictMusiCNN, TensorflowPredict2D
 from django.conf import settings
-import os
-import cv2
-import color_map_2d
+from essentia.standard import (MonoLoader, TensorflowPredict2D,
+                               TensorflowPredictMusiCNN)
+
+from .models import TaskStatus
+
+# 分析歌曲結構
+import json  # 引用json模組
+from dataclasses import asdict  # 引用dataclasses模組下的asdict函數
+from pathlib import PosixPath  # 引用pathlib模組下的PosixPath類別
+from allin1.typings import *  # 去引用allin1資料夾下的typings.py檔案（型別）
+import allin1
+
+# import cv2
+# import color_map_2d
 
 @shared_task(bind=True)
 def long_running_task(self, musicid, user_id, music_name):
@@ -26,161 +28,46 @@ def long_running_task(self, musicid, user_id, music_name):
     try:
         # =======For Ham: 把code放在這======
 
-        # 定義顏色與情緒位置
-        colors = {
-            "orange": [255, 165, 0],
-            "blue": [0, 0, 255],
-            "bluegreen": [0, 165, 255],
-            "green": [0, 205, 0],
-            "red": [255, 0, 0],
-            "yellow": [255, 255, 0],
-            "purple": [128, 0, 128],
-            "neutral": [255, 241, 224]
-        }
-
-        disgust_pos = [-0.9, 0]
-        angry_pos = [-0.5, 0.5]
-        alert_pos = [0, 0.6]
-        happy_pos = [0.5, 0.5]
-        calm_pos = [0.4, -0.4]
-        relaxed_pos = [0, -0.6]
-        sad_pos = [-0.5, -0.5]
-        neu_pos = [0.0, 0.0]
-
-        emotion_positions = [disgust_pos, angry_pos, alert_pos, happy_pos, calm_pos, relaxed_pos, sad_pos, neu_pos]
-        emotion_colors = [colors["purple"], colors["red"], colors["orange"], colors["yellow"], colors["green"], colors["bluegreen"], colors["blue"], colors["neutral"]]
-
-        # 創建情緒顏色地圖
-        width, height = 500, 500
-        emo_map = color_map_2d.create_2d_color_map(emotion_positions, emotion_colors, width, height)
-
-        # 將1-9範圍轉換到-1到1範圍
-        def scale_value(value, old_min, old_max, new_min, new_max):
-            return new_min + (float(value - old_min) / (old_max - old_min) * (new_max - new_min))
-
-        # 轉換範圍
-        def get_color_from_valence_arousal(valence, arousal):
-            arousal = scale_value(arousal, 1, 9, -1, 1)
-            valence = scale_value(valence, 1, 9, -1, 1)
-
-            y_center, x_center = int(height / 2), int(width / 2)
-            x = x_center + int((width / 2) * valence)
-            y = y_center - int((height / 2) * arousal)
-
-            color = np.median(emo_map[y-2:y+2, x-2:x+2], axis=0).mean(axis=0)
-            return (int(color[0]), int(color[1]), int(color[2]))
-
-        # 讀取txt檔案並寫入結果到新檔案
-        def process_txt_file(input_file_path, output_file_path):
-            with open(input_file_path, 'r') as file:
-                lines = file.readlines()
-
-            results = []
-            for line in lines:
-                try:
-                    valence, arousal = map(float, line.strip().split())
-                    color = get_color_from_valence_arousal(valence, arousal)
-                    results.append(color)
-                except ValueError:
-                    print(f"Invalid line: {line.strip()}")
-
-            # 把結果寫入輸出檔案
-            with open(output_file_path, 'w') as file:
-                for color in results:
-                    file.write(f"{color}\n")
-
-        #讀取包含RGB參數的txt文件並返回RGB列表
-        def read_rgb_parameters(file_path):
-            rgb_list = []
-            with open(file_path, 'r') as file:
-                for line in file:
-                    # 去括號和空格、分割
-                    line = line.strip().replace('(', '').replace(')', '').replace(' ', '')
-                    r, g, b = map(int, line.split(','))
-                    rgb_list.append((r, g, b))
-            return rgb_list
-
-        #根據RGB列表生成HTML文件顯示顏色區塊
-        def generate_html(rgb_list, output_file):
-            html_content = '''
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Color Blocks</title>
-                <style>
-                    .color-block {
-                        width: 100%;
-                        height: 100px;
-                        margin: 10px 0;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-size: 24px;
-                        color: white;
-                        font-weight: bold;
-                    }
-                </style>
-            </head>
-            <body>
-            '''
-
-            for i, (r, g, b) in enumerate(rgb_list, start=1):
-                text_color = "white" if (r*0.299 + g*0.587 + b*0.114) < 186 else "black"
-                html_content += f'<div class="color-block" style="background-color: rgb({r}, {g}, {b}); color: {text_color};">{i}</div>\n'
-
-            html_content += '''
-            </body>
-            </html>
-            '''
-
-            with open(output_file, 'w') as file:
-                file.write(html_content)
-
-        # 去定義essentia model路徑，從settings.py裡面拿
-        # 這裡可以跑essentia的code
-        # os.path.join(settings.MEDIA_ROOT, musicid) 是音樂檔案的路徑
-        input_file_path = os.path.join(settings.MEDIA_ROOT, musicid)
-        # os.path.join(essentia_path, 'msd-musicnn-1.pb') 是模型的路徑
-        if __name__ == "__main__":
-            #音頻分析
-            audio = MonoLoader(filename=input_file_path, sampleRate=48000, resampleQuality=4)()
-            embedding_model = TensorflowPredictMusiCNN(graphFilename=os.path.join(essentia_path, 'msd-musicnn-1.pb'), output='model/dense/BiasAdd')
-            embeddings = embedding_model(audio)
-            model = TensorflowPredict2D(graphFilename=os.path.join(essentia_path, 'deam-msd-musicnn-2.pb'), output='model/Identity')
-            predictions = model(embeddings)
-
-            #Arousal, Valence儲存
-            file_name_without_exten = os.path.splitext(os.path.basename(input_file_path))[0] #提取文件名
-
-            #新檔案夾名稱（重要）
-            new_dir = settings.MEDIA_ROOT
-            txtfile = os.path.join(new_dir, f'{file_name_without_exten}.txt')
-            np.savetxt(txtfile, predictions)
-
-            #RGB參數儲存
-            input_file_path = txtfile
-            rgb_file_path =  txtfile.replace(".txt", "_rgb.txt")
-            process_txt_file(input_file_path, rgb_file_path)
-            rgb_list = read_rgb_parameters(rgb_file_path)
-
-            #挑出RGB參數
-            with open(rgb_file_path, 'r') as file:
-                lines = file.readlines()
-
-            hex_values = []
-            for line in lines[:5]:
-                rgb = eval(line.strip())
-                hex_value = rgb_to_hex(rgb)
-                hex_values.append(hex_value)
-            print(hex_values)
-
-
+        # task_status.result = str(predictions)
         # =======到這裡結束，請注意把你的結果存成str，到task_status.result======
 
+        # ======= 歌曲段落分析 =======
+
+        # fake data:
+        # 假設已經有一個 AnalysisResult 物件 result
+        song_structure = AnalysisResult(
+            path='content/stay.mp3',
+            bpm=102,
+            beats=[26.49, 27.06, 27.65, 28.23, 28.82, 29.4, 30.0, 30.59, 31.17, 31.76, 32.35, 32.93, 33.53, 34.11, 34.69, 35.29, 35.87, 36.46, 37.06, 37.64, 38.23, 38.82, 39.4, 40.0, 40.58, 41.17, 41.76, 42.35, 42.94, 43.52, 44.11, 44.7, 45.29, 45.87, 46.46, 47.05, 47.64, 48.23, 48.82, 49.38, 49.99, 50.56, 51.18, 51.74, 52.35, 52.93, 53.52, 54.11, 54.7, 55.26, 55.87, 56.45, 57.05, 57.65, 58.23, 58.82, 59.41, 60.0, 60.58, 61.17, 61.76, 62.35, 62.94, 63.52, 64.12, 64.7, 65.29, 65.88, 66.47, 67.06, 67.64, 68.24, 68.82, 69.4, 70.0, 70.59, 71.17, 71.76, 72.35, 72.94, 73.52, 74.12, 74.7, 75.29, 75.88, 76.47, 77.05, 77.65, 78.23, 78.82, 79.41, 80.0, 80.58, 81.17, 81.76, 82.35, 82.94, 83.53, 84.11, 84.7, 85.28, 85.88, 86.46, 87.05, 87.64, 88.22, 88.82, 89.4, 90.0, 90.58, 91.17, 91.76, 92.35, 92.93, 93.53, 94.11, 94.7, 95.29, 95.87, 96.46, 97.06, 97.64, 98.23, 98.82, 99.4, 99.99, 100.58, 101.17, 101.76, 102.34, 102.93, 103.52, 104.12, 104.7, 105.29, 105.88, 106.46, 107.05, 107.64, 108.23, 108.82, 109.4, 109.99, 110.58, 111.17, 111.75, 112.34, 112.93, 113.52, 114.1, 114.7, 115.29, 115.88, 116.46, 117.05, 117.64, 118.23, 118.81, 119.4, 119.99, 120.59, 121.16, 121.76, 122.34, 122.93, 123.52, 124.11, 124.7, 125.29, 125.89, 126.47, 127.03, 127.64, 128.21, 128.82, 129.41, 130.0, 130.59, 131.17, 131.77, 132.35, 132.94, 133.53, 134.11, 134.7, 135.29, 135.88, 136.46, 137.06, 137.64, 138.23, 138.82, 139.41, 140.0, 140.58, 141.17, 141.76, 142.34, 142.96, 143.53, 144.11, 144.7, 145.29, 145.88, 146.46, 147.05, 147.64, 148.23, 148.82, 149.41, 150.0, 150.59, 151.17, 151.76, 152.35, 152.94, 153.52, 154.11, 154.7, 155.29, 155.88, 156.47, 157.06, 157.65, 158.23, 158.82, 159.41, 160.0, 160.58, 161.17, 161.76, 162.35, 162.92, 163.52, 164.1, 164.7, 165.29, 165.87, 166.47, 167.05, 167.65, 168.22, 168.82, 169.41, 170.0, 170.58, 171.17, 171.76, 172.35, 172.93, 173.52, 174.11, 174.7, 175.29, 175.87, 176.46, 177.05, 177.64, 178.23, 178.82, 179.41, 179.99, 180.58, 181.17, 181.77, 182.35, 182.93, 183.52, 184.11, 184.7, 185.29, 185.88, 186.46, 187.05, 187.64, 188.23, 188.82, 189.41, 189.99, 190.58, 191.17, 191.76, 192.35, 192.94, 193.53, 194.11, 194.7, 195.29, 195.87, 196.46, 197.05, 197.64, 198.23, 198.82, 199.4, 199.99, 200.57],
+            downbeats=[26.49, 28.82, 31.17, 33.53, 35.87, 38.23, 40.58, 42.94, 45.29, 47.64, 49.99, 52.35, 54.7, 57.05, 59.41, 61.76, 64.12, 66.47, 68.82, 71.17, 73.52, 75.88, 78.23, 80.58, 82.94, 85.28, 87.64, 90.0, 92.35, 94.7, 97.06, 99.4, 101.76, 104.12, 106.46, 108.82, 111.17, 113.52, 115.88, 118.23, 120.59, 122.93, 125.29, 127.64, 130.0, 132.35, 134.7, 137.06, 139.41, 141.76, 144.11, 146.46, 148.82, 151.17, 153.52, 155.88, 158.23, 160.58, 162.92, 165.29, 167.65, 170.0, 172.35, 174.7, 177.05, 179.41, 181.77, 184.11, 186.46, 188.82, 191.17, 193.53, 195.87, 198.23, 200.57],
+            beat_positions=[1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1],
+            segments=[
+                Segment(start=0.0, end=0.03, label='cool'),
+                Segment(start=0.03, end=28.82, label='verse'),
+                Segment(start=28.82, end=46.44, label='verse'),
+                Segment(start=46.44, end=66.46, label='chorus'),
+                Segment(start=66.46, end=87.64, label='inst'),
+                Segment(start=87.64, end=106.46, label='verse'),
+                Segment(start=106.46, end=124.1, label='verse'),
+                Segment(start=124.1, end=144.11, label='chorus'),
+                Segment(start=144.11, end=162.93, label='chorus'),
+                Segment(start=162.93, end=180.58, label='bridge'),
+                Segment(start=180.58, end=200.57, label='chorus'),
+                Segment(start=200.57, end=213.12, label='outro')],
+                activations=None, embeddings=None
+        )
+
+        # 實際分析請取消註解下面這行：
+        # song_structure = allin1.analyze(os.path.join(settings.MEDIA_ROOT, music_name))
+
+        # 將 segments 轉換為字典列表
+        segments_dict = [asdict(segment) for segment in song_structure.segments]
+
+        task_status.segments = segments_dict
+        task_status.bpm = song_structure.bpm
+        # ==========================
+
         task_status.status = 'COMPLETED'
-        task_status.result = str(predictions)
         task_status.save()
         return "Task completed"
     except Exception as e:
