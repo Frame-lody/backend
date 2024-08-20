@@ -15,9 +15,12 @@ from dataclasses import asdict  # 引用dataclasses模組下的asdict函數
 from pathlib import PosixPath  # 引用pathlib模組下的PosixPath類別
 from allin1.typings import *  # 去引用allin1資料夾下的typings.py檔案（型別）
 import allin1
-
-# import cv2
-# import color_map_2d
+#分析情緒顏色
+import numpy as np
+import os
+import cv2
+import sci
+import scipy.spatial
 
 @shared_task(bind=True)
 def long_running_task(self, musicid, user_id, music_name):
@@ -27,9 +30,127 @@ def long_running_task(self, musicid, user_id, music_name):
 
     try:
         # =======For Ham: 把code放在這======
+        #  顏色權重相關計算
+        def get_color_for_point(point_coords, list_of_point_centers, list_of_colors):
+            color = np.array([0.0, 0.0, 0.0])
+            # get distances of the "query" point from all other points
+            distances = scipy.spatial.distance.cdist([point_coords],
+                                                    list_of_point_centers)[0]
+
+            # get weights and compute new RGB value as weighted sum:
+            weights = 1 / (distances + 0.1)
+
+            for ic, c in enumerate(list_of_colors):
+                color += (np.array(c) * weights[ic])
+            color /= (np.sum(weights))
+            sum_color = np.sum(color)
+            required_sum_color = 600.0
+            if color.max() * (required_sum_color/sum_color) <= 255:
+                color *= (required_sum_color/sum_color)
+            else:
+                color *= (255/(color.max()))
+            return color
+
+        def create_2d_color_map(list_of_points, list_of_colors, height, width):
+            rgb = np.zeros((height, width, 3)).astype("uint8")
+            c_x = int(width / 2)
+            c_y = int(height / 2)
+            step = 3
+            win_size = int((step-1) / 2)
+            for i in range(len(list_of_points)):
+                rgb[c_y - int(list_of_points[i][1] * height / 2),
+                    c_x + int(list_of_points[i][0] * width / 2)] = list_of_colors[i]
+            for y in range(win_size, height - win_size, step):
+                for x in range(win_size, width - win_size, step):
+                    x_real = (x - width / 2) / (width / 2)
+                    y_real = (height / 2 - y ) / (height / 2)
+                    color = get_color_for_point([x_real, y_real], list_of_points,
+                                                list_of_colors)
+                    rgb[y - win_size - 1 : y + win_size + 1,
+                        x - win_size - 1 : x + win_size + 1] = color
+            bgr = cv2.cvtColor(rgb, cv2.COLOR_BGR2RGB)
+            return bgr
+
+        # 定義顏色與情緒位置
+        colors = {
+            "orange": [255, 165, 0],
+            "blue": [0, 0, 255],
+            "bluegreen": [0, 165, 255],
+            "green": [0, 205, 0],
+            "red": [255, 0, 0],
+            "yellow": [255, 255, 0],
+            "purple": [128, 0, 128],
+            "neutral": [255, 241, 224]
+        }
+
+        disgust_pos = [-0.9, 0]
+        angry_pos = [-0.5, 0.5]
+        alert_pos = [0, 0.6]
+        happy_pos = [0.5, 0.5]
+        calm_pos = [0.4, -0.4]
+        relaxed_pos = [0, -0.6]
+        sad_pos = [-0.5, -0.5]
+        neu_pos = [0.0, 0.0]
+
+        emotion_positions = [disgust_pos, angry_pos, alert_pos, happy_pos, calm_pos, relaxed_pos, sad_pos, neu_pos]
+        emotion_colors = [colors["purple"], colors["red"], colors["orange"], colors["yellow"], colors["green"], colors["bluegreen"], colors["blue"], colors["neutral"]]
+
+        # 創建情緒顏色地圖
+        width, height = 500, 500
+        emo_map = create_2d_color_map(emotion_positions, emotion_colors, width, height)
+
+        # 將1-9範圍轉換到-1到1範圍
+        def scale_value(value, old_min, old_max, new_min, new_max):
+            return new_min + (float(value - old_min) / (old_max - old_min) * (new_max - new_min))
+
+        # 將AV轉換顏色
+        def get_color_from_valence_arousal(valence, arousal):
+            arousal = scale_value(arousal, 1, 9, -1, 1)
+            valence = scale_value(valence, 1, 9, -1, 1)
+
+            y_center, x_center = int(height / 2), int(width / 2)
+            x = x_center + int((width / 2) * valence)
+            y = y_center - int((height / 2) * arousal)
+
+            color = np.median(emo_map[y-2:y+2, x-2:x+2], axis=0).mean(axis=0)
+            return '#{:02x}{:02x}{:02x}'.format(int(color[0]), int(color[1]), int(color[2]))
+
+        #將prediction陣列轉換成十六進位的RGB值
+        def convert_prediction_to_hex(prediction, emo_map, height, width):
+            result = []
+            for valence, arousal in prediction:
+                valence, arousal = float(valence), float(arousal)
+                color_hex = get_color_from_valence_arousal(valence, arousal, emo_map, height, width)
+                result.append(color_hex)
+            return result
+
+
+        # 去定義essentia model路徑，從settings.py裡面拿
+        # 這裡可以跑essentia的code
+        # os.path.join(settings.MEDIA_ROOT, musicid) 是音樂檔案的路徑
+        input_file_path = os.path.join(settings.MEDIA_ROOT, musicid)
+        # os.path.join(essentia_path, 'msd-musicnn-1.pb') 是模型的路徑
+        if __name__ == "__main__":
+            #音頻分析
+            audio = MonoLoader(filename=input_file_path, sampleRate=48000, resampleQuality=4)()
+            embedding_model = TensorflowPredictMusiCNN(graphFilename=os.path.join(essentia_path, 'msd-musicnn-1.pb'), output='model/dense/BiasAdd')
+            embeddings = embedding_model(audio)
+            model = TensorflowPredict2D(graphFilename=os.path.join(essentia_path, 'deam-msd-musicnn-2.pb'), output='model/Identity')
+            predictions = model(embeddings)
+            #轉換為字串陣列
+            predictions = predictions.astype(str).tolist()
+            #獲取顏色
+            hex_values = []
+            hex_values = convert_prediction_to_hex(predictions, emo_map, height, width)
+
+            print(hex_values[:5])
+
 
         # task_status.result = str(predictions)
         # =======到這裡結束，請注意把你的結果存成str，到task_status.result======
+
+
+
 
         # ======= 歌曲段落分析 =======
 
