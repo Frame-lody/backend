@@ -9,5 +9,5 @@ essentia-tensorflow==2.1b6.dev1110
 redis==5.0.7
 celery==5.4.0
 flower==2.0.1
-scipy==1.5.2
-opencv_python==4.2.0.34
+scipy==1.13.1
+opencv_python==4.10.0.84

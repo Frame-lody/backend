@@ -19,7 +19,6 @@ import allin1
 import numpy as np
 import os
 import cv2
-import sci
 import scipy.spatial
 
 @shared_task(bind=True)
@@ -133,9 +132,9 @@ def long_running_task(self, musicid, user_id, music_name):
         if __name__ == "__main__":
             #音頻分析
             audio = MonoLoader(filename=input_file_path, sampleRate=48000, resampleQuality=4)()
-            embedding_model = TensorflowPredictMusiCNN(graphFilename=os.path.join(essentia_path, 'msd-musicnn-1.pb'), output='model/dense/BiasAdd')
+            embedding_model = TensorflowPredictMusiCNN(graphFilename=os.path.join(settings.ESSENTIA_PATH, 'msd-musicnn-1.pb'), output='model/dense/BiasAdd')
             embeddings = embedding_model(audio)
-            model = TensorflowPredict2D(graphFilename=os.path.join(essentia_path, 'deam-msd-musicnn-2.pb'), output='model/Identity')
+            model = TensorflowPredict2D(graphFilename=os.path.join(settings.ESSENTIA_PATH, 'deam-msd-musicnn-2.pb'), output='model/Identity')
             predictions = model(embeddings)
             #轉換為字串陣列
             predictions = predictions.astype(str).tolist()
