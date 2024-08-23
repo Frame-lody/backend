@@ -29,6 +29,7 @@ urlpatterns = [
     # path('accounts/', include('django.contrib.auth.urls')) # 使用 Django 內建的登入登出頁面
     path('users/', include('users.urls')),
     path('upload/', include('upload.urls')),
+    path('p5js/', include('p5js.urls')),
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
 
 

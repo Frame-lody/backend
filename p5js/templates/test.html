@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>p5.js 自動切換動畫</title>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.js"></script>
+	<!-- <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/addons/p5.sound.min.js"></script> -->
+    <!-- <script src="https://unpkg.com/ml5@1.0.1/dist/ml5.min.js"></script> -->
+    <!-- <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script> -->
+    <script src="https://unpkg.com/ml5@1/dist/ml5.js"></script>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/test.css' %}">
+</head>
+<body>
+    <div id="canvas-container"></div>
+
+    <script>
+        let sketches = ['mySketch3.js'];
+        let currentSketchIndex = 0;
+        let currentP5Instance;
+        let previousScript;
+        let timeInterval = 0;
+        let times = [];
+
+
+        //設定顏色
+        // window.bgcolor = [
+        //     "#FF5F5F",
+	    //     "#F8907C",
+	    //     "#FFC2A7",
+	    //     "#FFEC57",
+	    //     "#9EF2BB",
+	    //     "#6CBAF4",
+	    //     "#4AD0E8"];
+
+
+        // let mic;
+        // let audioStarted = false;
+
+        function clearPreviousCanvas() {
+            // 清除舊的 p5 實例和畫布
+            if (currentP5Instance) {
+                currentP5Instance.remove();
+                currentP5Instance = null;
+            }
+            // 清除舊的 canvas-container 內容
+            document.getElementById('canvas-container').innerHTML = '';
+
+            // 移除之前的 script 標籤
+            if (previousScript) {
+                document.body.removeChild(previousScript);
+                previousScript = null;
+            }
+        }
+
+        function loadSketch(fileName) {
+            // 先清除舊的 p5 實例和畫布
+            clearPreviousCanvas();
+
+            // 動態加載指定的腳本
+            const sketchScript = document.createElement('script');
+            // ！！！！這邊需要改！！！！
+            sketchScript.src = fileName;
+            previousScript = sketchScript;
+            document.body.appendChild(sketchScript);
+
+            // 腳本加載完成後創建 p5 實例
+            sketchScript.onload = () => {
+                setTimeout(() => {
+                    if (typeof window.sketch === 'function') {
+                        currentP5Instance = new p5(window.sketch, 'canvas-container');
+                    } else {
+                        console.error('sketch function not found in sketch:', fileName);
+                    }
+                }, 100); // 等待腳本完全加載後再創建 p5 實例
+            };
+
+            sketchScript.onerror = (error) => {
+                console.error('Error loading sketch:', error);
+            };
+        }
+
+        function nextSketch() {
+            // 加載下一個草稿
+            currentSketchIndex = (currentSketchIndex + 1) % sketches.length;
+            loadSketch(sketches[currentSketchIndex]);
+        }
+
+        // function startAudio() {
+        //     if (!audioStarted) {
+        //         mic = new p5.AudioIn();
+        //         mic.start(() => {
+        //             console.log('Microphone is active');
+        //         });
+        //         audioStarted = true;
+        //     }
+        // }
+
+        // // 使用點擊事件來啟動音頻流
+        // document.body.addEventListener('click', startAudio, { once: true });
+
+
+
+        // 初次加載第一個動畫
+        loadSketch(sketches[currentSketchIndex]);
+
+        //設定時間區間
+        // for(let i = 0;i<times.length;i++){
+        //     timeInterval = times[i];
+        // }
+
+
+
+        // 每30秒切換一次動畫
+        setInterval(nextSketch, 30000);
+        //setInterval(nextSketch, timeInterval);
+
+
+    </script>
+
+     <!--  確保 hand.js 先加載 -->
+     <script src="{% static 'js/ml5_body.js' %}"></script>
+
+</body>
+</html>

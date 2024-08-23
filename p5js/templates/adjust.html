@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>導覽列試做</title>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'css/adjust.css' %}">
+    </head>
+    <body >
+        <header>
+            <nav>
+                <ul class="flex-nav">
+                    <li><a class="navbar-brand" href="#"><img src="{% static 'img/adjust/Eyesound me.svg' %}" alt="LOGO"></a></li>
+                    <div class="navbar-right">
+                        <li><a href="#">範例動畫庫</a></li>
+                        <li><a href="#"><img src="{% static 'img/adjust/userhead.svg' %}" alt="userhead"></a></li>
+                    </div>
+                </ul>
+            </nav>
+        </header>
+        <main>
+            <h2>預覽動畫</h2>
+            <div class="content-container2">
+                <div class="preview-container">
+                    <iframe src = "{% url 'test' %}" id = "myIframe"></iframe>
+                    <!-- <div class="overlay-text">Frame-lody</div> -->
+                    <button class="play-button" id="play-button">⏸</button>
+                    <button class="fullscreen-button" id="fullscreen-button"><img src="{% static 'img/adjust/fullscreen icon.svg' %}"></button>
+                </div>
+                <div class="settings-container">
+                    <div class="color-selection">
+                        <label for="color1">#2B91EE</label><br>
+                        <input type="color" id="color1" name="color1" value="#2B91EE" onchange="updateLabel('color1')"><br>
+
+                        <label for="color2">#2B91EE</label><br>
+                        <input type="color" id="color2" name="color2" value="#2B91EE" onchange="updateLabel('color2')"><br>
+
+                        <label for="color3">#2B91EE</label><br>
+                        <input type="color" id="color3" name="color3" value="#2B91EE" onchange="updateLabel('color3')">
+                    </div>
+                    <div class="speed-control">
+                        <label for="speed">速度</label><br>
+                        <input type="range" id="speed" name="speed" min="0.5" max="16" step="0.5" value="1">
+                        <output id="speedValue">1x</output>
+                    </div>
+                    <button class="ok-button">ok</button>
+                </div>
+            </div>
+        </main>
+        <script src="{% static 'js/adjust.js' %}"></script>
+    </body>
+</html>

@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     # 'django.contrib.messages',
     'channels', # Django Channels
     'upload',
-    'users'
+    'users',
+    'p5js'
 ]
 
 ASGI_APPLICATION = 'framelody_backend.asgi.application'
@@ -166,3 +167,6 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 #     messages.WARNING: 'warning',
 #     messages.ERROR: 'danger',
 # }
+
+# 啟用iframe
+X_FRAME_OPTIONS = 'SAMEORIGIN'

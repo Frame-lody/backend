@@ -1,0 +1,252 @@
+html {
+    box-sizing: border-box;
+}
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: white;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-image: url('../img/adjust/background.svg');
+}
+
+header {
+    padding: 10px 20px;
+    background-color: #4b0082; /* 模擬頂部的紫色背景 */
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+nav > ul {
+    list-style: none; /* 移除項目符號 */
+    margin: 0;
+    padding: 0;
+}
+
+nav a {
+    color: inherit; /* 移除超連結顏色 */
+    display: block; /* 讓 <a> 填滿 <li> */
+    font-size: 1.2rem;
+    padding: 10px;
+    text-decoration: none; /* 移除超連結底線 */
+}
+
+/* 滑鼠移到 <a> 時變成深底淺色 */
+nav a:hover {
+    background-color: rgb(115, 115, 115);
+    color: white;
+}
+
+.flex-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.flex-nav li {
+    margin: 0 10px;
+}
+
+.flex-nav a:hover {
+    text-decoration: underline;
+}
+
+.navbar-right {
+    display: flex;
+    align-items: center;
+    color: white; /*文字顏色*/
+    font-weight: bolder; /*文字粗體*/
+}
+
+.centered-content {
+    width: 30%;
+    position: absolute;
+    top: 45%;
+    left: 35%;
+}
+
+.content-container2 {
+    display: flex;
+    justify-content: space-around;
+    width: 80%;
+}
+
+.start {
+    position: absolute;
+    top: 50%;
+    right: 15%;
+}
+
+.de {
+    background: url('img/demo.svg') center center no-repeat; /* 背景動畫圖片 */
+    background-size: cover;
+}
+
+.background-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.overlay-text {
+    font-size: 7em;
+    font-family: 'Courier New', Courier, monospace;
+    color: rgba(255, 255, 255, 0.1);
+    text-shadow: 2px 2px 4px #222121;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.button-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    bottom: 20px;
+    padding: 0 20px;
+}
+
+.nav-button {
+    padding: 10px 20px;
+    font-size: 1.5em;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid white;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    text-shadow: 1px 1px 2px #000;
+}
+
+.nav-button:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.preview-container {
+    position: relative;
+    width: 50%;
+    /* background: url('img/demo.svg') center center no-repeat; */
+    border-radius: 15px;
+    padding: 10px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
+}
+
+iframe {
+    border-radius: 15px;
+    border: none;
+    width: 100%;
+    height: 100%;
+}
+
+.overlay-text {
+    font-size: 4em;
+    color: rgba(255, 255, 255, 0.1);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.play-button {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2em;
+    background-color: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.fullscreen-button {
+    position: absolute;
+    bottom: 10px;
+    left: 90%;
+    transform: translateX(-50%);
+    font-size: 2em;
+    background-color: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+/* 設定選項部分 */
+.settings-container {
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 20px;
+}
+
+.color-selection label {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.color-selection input[type='color'] {
+    margin-right: 5px;
+    width: 50px;
+    height: 30px;
+    border: none;
+    cursor: pointer;
+}
+
+.speed-control {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.speed-control label {
+    font-size: 1.2em;
+}
+
+.speed-control input[type='range'] {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.speed-control output {
+    display: block;
+    margin-top: 10px;
+    font-size: 1.2em;
+}
+
+.ok-button {
+    margin-top: 30px;
+    padding: 10px 20px;
+    font-size: 1.5em;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid white;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    align-self: center;
+}
+
+.ok-button:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
