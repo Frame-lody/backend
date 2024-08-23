@@ -154,6 +154,9 @@ def show_structure(request):
     audio_analysis = AudioAnalysis.objects.first()
     return render(request, "show_structure.html", locals())
 
+def select_music(request):
+    return render(request, "select_music.html", locals())
+
 # def start_task(request):
 #     task = long_running_task.delay()
 #     return JsonResponse({'task_id': task.id})

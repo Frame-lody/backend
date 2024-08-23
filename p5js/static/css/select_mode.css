@@ -1,0 +1,126 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to bottom, #2d4889, #2fa2b8, #30cfd0);
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.mode-container {
+    display: flex;
+    justify-content: space-around;
+    width: 90%;
+    max-width: 1200px;
+    margin-bottom: 20px;
+}
+
+.mode-box {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    width: 45%;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    margin-top: 100px;
+}
+
+h2 {
+    color: white;
+    margin-bottom: 45px;
+    font-size: 35px;
+}
+
+.button-container {
+    height: 350px;
+    overflow-y: auto; /* 使内容可以垂直滾動 */
+    padding-right: 1px; /* 添加內邊距，避免滾動條覆蓋內容 */
+    border-radius: 10px;
+}
+
+.button-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 10px;
+    margin-left: 25px; /* 讓按鈕組距離右邊緣更近 */
+}
+
+.image-button {
+    background-color: #000;
+    height: 190px;
+    width: 210px;
+    color: white;
+    border: none;
+    padding: 20px;
+    font-size: 16px;
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s, font-size 0.3s; /* 添加 font-size 過渡 */
+}
+
+.image-button:hover {
+    transform: scale(1.05); /* 按鈕放大 */
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8); /* 增強陰影效果 */
+    background-color: #333; /* 修改背景顏色 */
+    font-size: 25px; /* 懸停時字體變大 */
+}
+
+/* 增加一個輕微的內部亮度效果 */
+.image-button:hover::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    background: rgba(255, 255, 255, 0.2); /* 輕微白色背景 */
+    border-radius: 10px;
+    z-index: -1; /* 確保它在按鈕下方 */
+}
+
+/* 為每個按鈕設定背景圖片 */
+.button-1 {
+    background-image: url('../img/mode1.svg');
+}
+
+.button-2 {
+    background-image: url('../img/mode2.svg');
+}
+
+.button-3 {
+    background-image: url('../img/mode3.svg');
+}
+
+.button-4 {
+    background-image: url('../img/mode4.svg');
+}
+
+.button-5 {
+    background-image: url('../img/mode1.svg');
+}
+
+.button-6 {
+    background-image: url('../img/mode2.svg');
+}
+
+.button-7 {
+    background-image: url('../img/mode3.svg');
+}
+
+.button-8 {
+    background-image: url('../img/mode4.svg');
+}

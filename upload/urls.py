@@ -16,4 +16,5 @@ urlpatterns = [
     path('status/', views.task_status, name='task_status'),
     path('insert_structure/', views.insert_structure, name='insert_structure'),
     path('show_structure/', views.show_structure, name='show_structure'),
+    path('select_music/', views.select_music, name='select_music'),
 ]

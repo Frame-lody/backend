@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>選擇動畫</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/music_part.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="progress-bar">
+            <div class="step completed" id="step1">1</div>
+            <div class="divider completed" id="divider1"></div>
+            <div class="step completed" id="step2">2</div>
+            <div class="divider" id="divider2"></div>
+            <div class="step" id="step3">3</div>
+            <div class="divider" id="divider3"></div>
+            <div class="step" id="step4">4</div>
+        </div>
+
+        <h1>選擇動畫</h1>
+        <p>點擊變更預設動畫</p>
+
+        <div class="content-section">
+            <div class="preview-section">
+                <div class="preview-title">預覽動畫</div>
+                <div class="preview-box">
+                    <img src="{% static 'img/animation.svg' %}" alt="預覽動畫">
+                </div>
+            </div>
+
+            <div class="options-container">
+                <div class="animation-options">
+                    <div class="option-group">
+                        <div class="option-label">主歌</div>
+                        <button class="option-button">動畫1</button>
+                    </div>
+                    <div class="option-group">
+                        <div class="option-label">副歌</div>
+                        <button class="option-button">動畫2</button>
+                    </div>
+                    <div class="option-group">
+                        <div class="option-label">其他</div>
+                        <button class="option-button">動畫3</button>
+                    </div>
+                    <div class="option-group last-group">
+                        <div class="option-label">純音樂</div>
+                        <button class="option-button">動畫4</button>
+                        <button class="confirm-button">確認</button> <!-- 確認鍵放在這裡 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

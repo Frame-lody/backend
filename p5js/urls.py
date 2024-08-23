@@ -8,4 +8,7 @@ urlpatterns = [
     # path('sortable/', views.sortable, name='sortable'),
     path('test/', views.test, name='test'),
     path('adjust/', views.adjust, name='adjust'),
+    path('select_mode/', views.select_mode, name='select_mode'),
+    path('music_part/', views.music_part, name='music_part'),
+    path('pay/', views.pay, name='pay'),
 ]

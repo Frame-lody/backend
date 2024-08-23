@@ -1,0 +1,86 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to bottom, #2D4889,#2FA2B8, #30CFD0);
+}
+
+.container {
+    text-align: center;
+    color: white;
+}
+
+.progress-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative; /* 設定容器為相對定位 */
+}
+
+.progress-bar .divider {
+    flex: 1;
+    height: 4px;
+    width: 70px;
+    background-color: #d9d9d9;
+}
+
+.step {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #D9D9D9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    font-weight: bold;
+    z-index: 1;
+}
+
+.step.completed {
+    background-color: #2D4889;
+    color: white;
+}
+
+.divider.completed {
+    background-color: #2D4889;
+}
+
+.completion-text {
+    position: absolute;
+    right: -95px; /* 調整這個值以設置在步驟 4 的右邊 */
+    bottom: -5px; /* 調整這個值以設置在步驟 4 的下方 */
+    font-size: 15px;
+}
+
+.content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.payment-button {
+    width: 65%;
+    height: 65px;
+    background-color: #FFFFFF;
+    border: none;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    font-size: 18px;
+    color: #3949ab;
+    cursor: pointer;
+    opacity: 70%;
+    font-weight: bold;
+}
+
+.payment-button:hover {
+    background-color: #3949ab;
+    color: #FFFFFF;
+}

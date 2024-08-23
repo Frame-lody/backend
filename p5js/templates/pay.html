@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>選擇付款方式</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/pay.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="progress-bar">
+            <div class="step completed" id="step1">1</div>
+            <div class="divider completed" id="divider1"></div>
+            <div class="step completed" id="step2">2</div>
+            <div class="divider completed" id="divider2"></div>
+            <div class="step completed" id="step3">3</div>
+            <div class="divider" id="divider3"></div>
+            <div class="step" id="step4">4</div>
+                <div class="completion-text">就快完成了！</div>
+        </div>
+        <div class="content">
+            <h2>選擇付款方式</h2>
+            <button class="payment-button">Line Pay</button>
+            <button class="payment-button">信用卡</button>
+            <button class="payment-button">銀行轉帳</button>
+        </div>
+    </div>
+</body>
+</html>
