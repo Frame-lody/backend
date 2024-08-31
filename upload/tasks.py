@@ -27,8 +27,8 @@ def long_running_task(self, musicid, user_id, music_name):
 
     try:
         # =======For Ham: 把code放在這======
-
-        # task_status.result = str(predictions)
+        predictions = ['#D77186', '#6CB7DA', '#D75725']
+        task_status.result = str(predictions)
         # =======到這裡結束，請注意把你的結果存成str，到task_status.result======
 
         # ======= 歌曲段落分析 =======
