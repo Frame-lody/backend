@@ -24,7 +24,7 @@
             <tr>
                 <td>{{ task.user }}</td>
                 <td>{{ task.music_name }}</td>
-                <td>{{ task.task_id }}</td>
+                <td><a href="{% url 'view_task' task.task_id %}">{{ task.task_id }}</a></td>
                 <td>{{ task.status }}</td>
                 <td>{{ task.result }}</td>
                 <td>{{ task.date_created }}</td>

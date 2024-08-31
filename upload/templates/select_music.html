@@ -19,14 +19,18 @@
             <div class="step" id="step4">4</div>
         </div>
         <h1>選擇音檔</h1>
-        <button class="file-select">
-            <div class="file-icon">
-                <img src="{% static 'img/game-icons_sound-waves.svg' %}" alt="sound-waves" class="icon">
-                <img src="{% static 'img/button.svg' %}" alt="plus icon" class="plus-icon">
-                <img src="{% static 'img/game-icons_sound-waves.svg' %}" alt="sound-waves" class="icon">
+        <form action="/" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="file-select">
+                <div class="file-icon">
+                    <img src="{% static 'img/game-icons_sound-waves.svg' %}" alt="sound-waves" class="icon">
+                    {% comment %} <img src="{% static 'img/button.svg' %}" alt="plus icon" class="plus-icon"> {% endcomment %}
+                    <input type="file" name="file" required />
+                    <img src="{% static 'img/game-icons_sound-waves.svg' %}" alt="sound-waves" class="icon">
+                </div>
             </div>
-        </button>
-        <button class="confirm-button" onclick="updateProgress()">確認</button>
+            <input type="submit" class="confirm-button" onclick="updateProgress()" value="開始上傳" />
+        </form>
     </div>
     <script src="{% static 'js/select_music.js' %}"></script>
 </body>

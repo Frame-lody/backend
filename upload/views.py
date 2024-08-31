@@ -33,7 +33,7 @@ def home(request):
         return redirect('task_status')
     # 將所有media資料夾裡的檔案列出來
     mediafiles = os.listdir(settings.MEDIA_ROOT)
-    return render(request, "upload.html", locals())
+    return render(request, "select_music.html", locals())
 
 def task_status(request):
     # 若使用者按下"delete"按鈕，則刪除該筆task
