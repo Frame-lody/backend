@@ -72,31 +72,28 @@ def long_running_task(self, musicid, user_id, music_name):
 
         # 定義顏色與情緒位置
         colors = {
-            "orange": [255, 165, 0],
-            "blue": [0, 0, 255],
-            "bluegreen": [0, 165, 255],
-            "green": [0, 205, 0],
-            "red": [255, 0, 0],
-            "yellow": [255, 255, 0],
-            "purple": [128, 0, 128],
-            "neutral": [255, 241, 224]
+                "yelllow": [255, 255, 0],
+                "red": [255, 0, 0],
+                "purple": [128, 0, 128],
+                "blue": [0, 0, 255],
+                "green": [0, 255, 0],
+                "cyan": [0, 220, 220],
+
         }
 
-        disgust_pos = [-0.9, 0]
-        angry_pos = [-0.5, 0.5]
-        alert_pos = [0, 0.6]
-        happy_pos = [0.5, 0.5]
-        calm_pos = [0.4, -0.4]
-        relaxed_pos = [0, -0.6]
-        sad_pos = [-0.5, -0.5]
-        neu_pos = [0.0, 0.0]
+        happy = [0.444, 0.25]
+        angry = [-0.3267, 0.5618]
+        sad = [-0.444, -0.25]
+        relaxed = [0.25, -0.444]
+        anxious = [-0.4829, 0.1294]
+        calm = [-0.1294, -0.4829]
 
-        emotion_positions = [disgust_pos, angry_pos, alert_pos, happy_pos, calm_pos, relaxed_pos, sad_pos, neu_pos]
-        emotion_colors = [colors["purple"], colors["red"], colors["orange"], colors["yellow"], colors["green"], colors["bluegreen"], colors["blue"], colors["neutral"]]
+        emotion_positions = [happy, angry, sad, relaxed, anxious, calm]
+        emotion_colors = [colors["yelllow"], colors["red"], colors["blue"], colors["green"], colors["purple"], colors["cyan"]]
 
         # 創建情緒顏色地圖
         width, height = 500, 500
-        emo_map = create_2d_color_map(emotion_positions, emotion_colors, width, height)
+        emo_map = color_map_2d.create_2d_color_map(emotion_positions, emotion_colors, width, height)
 
         # 將1-9範圍轉換到-1到1範圍
         def scale_value(value, old_min, old_max, new_min, new_max):
@@ -109,7 +106,7 @@ def long_running_task(self, musicid, user_id, music_name):
 
             y_center, x_center = int(height / 2), int(width / 2)
             x = x_center + int((width / 2) * valence)
-            y = y_center - int((height / 2) * arousal)
+            y = y_center + int((height / 2) * arousal)
 
             color = np.median(emo_map[y-2:y+2, x-2:x+2], axis=0).mean(axis=0)
             return '#{:02x}{:02x}{:02x}'.format(int(color[0]), int(color[1]), int(color[2]))
@@ -119,9 +116,34 @@ def long_running_task(self, musicid, user_id, music_name):
             result = []
             for valence, arousal in prediction:
                 valence, arousal = float(valence), float(arousal)
-                color_hex = get_color_from_valence_arousal(valence, arousal, emo_map, height, width)
+                color_hex = y(valence, arousal)
                 result.append(color_hex)
             return result
+
+        # 將顏色字串陣列和分析結果分割成對應的段落
+        def split_colors_by_segments(color_array, segments):
+            total_duration = segments[-1].end  # 使用最後一個段落的 end 作為歌曲的總時長
+            segment_colors = []
+
+            for segment in segments:
+                start_ratio = segment.start / total_duration
+                end_ratio = segment.end / total_duration
+
+                start_index = int(start_ratio * len(color_array))
+                end_index = int(end_ratio * len(color_array))
+
+                # 保證每個段落至少有一個顏色
+                if start_index == end_index and start_index < len(color_array):
+                    end_index += 1
+
+                segment_colors.append(color_array[start_index:end_index])
+
+            return segment_colors
+
+        # 提取最終結果，每個陣列的第一個顏色為例
+        def extract_segment_colors(segment_colors):
+            extract_colors = [colors[0] for colors in segment_colors if colors]  # 確保陣列非空
+            return extract_colors
 
 
         # 去定義essentia model路徑，從settings.py裡面拿
@@ -141,8 +163,10 @@ def long_running_task(self, musicid, user_id, music_name):
             #獲取顏色
             hex_values = []
             hex_values = convert_prediction_to_hex(predictions, emo_map, height, width)
-
-            print(hex_values[:5])
+            #照段落提取顏色
+            segment_colors = split_colors_by_segments(hex_values, segments)     #segments從資料庫提取
+            extract_colors = extract_segment_colors(segment_colors)     #最終結果！！
+            task_status.result = extract_colors
 
 
         # task_status.result = str(predictions)
