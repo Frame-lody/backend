@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from essentia.standard import (MonoLoader, TensorflowPredict2D,
                                TensorflowPredictMusiCNN)
 
@@ -30,7 +31,7 @@ def home(request):
         user_id = request.user.id
         task = long_running_task.delay(musicid=file, user_id=user_id, music_name=file)
         TaskStatus.objects.create(user=request.user, task_id=task.id, status='PENDING', music_name=file)
-        return redirect('task_status')
+        return redirect(reverse('music_part', kwargs={'task_id': task.id}))
     # 將所有media資料夾裡的檔案列出來
     mediafiles = os.listdir(settings.MEDIA_ROOT)
     return render(request, "select_music.html", locals())
@@ -39,7 +40,11 @@ def task_status(request):
     # 若使用者按下"delete"按鈕，則刪除該筆task
     if "delete" in request.POST:
         task_id = request.POST.get("task_id")
-        task = TaskStatus.objects.filter(task_id=task_id)
+        task = TaskStatus.objects.filter(task_id=task_id).first()
+        if task:
+            file_path = os.path.join(settings.MEDIA_ROOT, str(task.music_name))
+            if os.path.exists(file_path):
+                os.remove(file_path)
         task.delete()
         # revoke(task_id, terminate=True)
         return redirect('task_status')

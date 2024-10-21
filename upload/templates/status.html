@@ -2,44 +2,102 @@
 <html>
 <head>
     <title>Task Status</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to bottom, #2D4889, #2FA2B8, #30CFD0);
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 1000px;
+        }
+        h1 {
+            text-align: center;
+            color: #2D4889;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #2D4889;
+            color: white;
+        }
+        a {
+            color: #2FA2B8;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        button {
+            background-color: #2D4889;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2FA2B8;
+        }
+    </style>
 </head>
 <body>
-    <h1>Task Status</h1>
-    <a href="{% url 'home' %}">Go to Home</a>
-    <table>
-        <thead>
-            <tr>
-                <th>User</th>
-                <th>Music Name</th>
-                <th>Task ID</th>
-                <th>Status</th>
-                <th>Result</th>
-                <th>Created</th>
-                <th>Modified</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for task in tasks %}
-            <tr>
-                <td>{{ task.user }}</td>
-                <td>{{ task.music_name }}</td>
-                <td><a href="{% url 'view_task' task.task_id %}">{{ task.task_id }}</a></td>
-                <td>{{ task.status }}</td>
-                <td>{{ task.result }}</td>
-                <td>{{ task.date_created }}</td>
-                <td>{{ task.date_modified }}</td>
-                <td>
-                    <form method="post" style="display:inline;">
-                        {% csrf_token %}
-                        <input type="hidden" name="task_id" value="{{ task.task_id }}">
-                        <button type="submit" name="delete">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <a href="{% url 'task_status' %}">Refresh</a>
+    <div class="container">
+        <h1>Task Status</h1>
+        <a href="{% url 'home' %}">回首頁</a>
+        <table>
+            <thead>
+                <tr>
+                    <th>用戶</th>
+                    <th>音樂名稱</th>
+                    <th>任務 ID</th>
+                    <th>狀態</th>
+                    <th>結果</th>
+                    <th>創建時間</th>
+                    <th>修改時間</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ task.user }}</td>
+                    <td>{{ task.music_name }}</td>
+                    <td><a href="{% url 'music_part' task.task_id %}">{{ task.task_id }}</a></td>
+                    <td>{{ task.status }}</td>
+                    <td>{{ task.result }}</td>
+                    <td>{{ task.date_created }}</td>
+                    <td>{{ task.date_modified }}</td>
+                    <td>
+                        <form method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="task_id" value="{{ task.task_id }}">
+                            <button type="submit" name="delete">刪除</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'task_status' %}">重新整理</a>
+    </div>
 </body>
 </html>

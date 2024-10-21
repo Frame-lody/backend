@@ -25,11 +25,12 @@
                 <div class="file-icon">
                     <img src="{% static 'img/game-icons_sound-waves.svg' %}" alt="sound-waves" class="icon">
                     {% comment %} <img src="{% static 'img/button.svg' %}" alt="plus icon" class="plus-icon"> {% endcomment %}
-                    <input type="file" name="file" required />
+                    <input type="file" name="file" accept=".mp3, .wav" required />
                     <img src="{% static 'img/game-icons_sound-waves.svg' %}" alt="sound-waves" class="icon">
                 </div>
             </div>
-            <input type="submit" class="confirm-button" onclick="updateProgress()" value="開始上傳" />
+            {% comment %} <input type="submit" class="confirm-button" onclick="updateProgress()" value="開始上傳" /> {% endcomment %}
+            <input type="submit" class="confirm-button" value="開始上傳" />
         </form>
     </div>
     <script src="{% static 'js/select_music.js' %}"></script>

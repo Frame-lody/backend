@@ -1,4 +1,6 @@
 let iframe = document.getElementById('myIframe');
+let colors;
+let speed;
 
 function updateLabel(colorId) {
     var colorInput = document.getElementById(colorId);
@@ -11,12 +13,10 @@ function updateLabel(colorId) {
         clr = document.getElementById(`color${i}`).value;
         colorArray.push(clr);
     }
-    // console.log(label.textContent);
-    //console.log(colorArray);
 
     //傳遞顏色給iframe
-    let colors = encodeURIComponent(colorArray);
-    iframe.src = testUrl + '?colors=' + colors;
+    colors = encodeURIComponent(colorArray);
+    iframe.src = testUrl + '?colors=' + colors + '&speed=' + speed;
 }
 
 const speedSlider = document.getElementById('speed');
@@ -26,8 +26,8 @@ speedSlider.addEventListener('input', function () {
     speedOutput.textContent = `${this.value}x`; // 根據滑桿的值動態更新顯示
 
     //傳遞speed給iframe
-    let param = encodeURIComponent(this.value);
-    iframe.src = testUrl + '?key=' + param;
+    speed = encodeURIComponent(this.value);
+    iframe.src = testUrl + '?speed=' + speed + '&colors=' + colors;
 });
 
 // 切換播放按鈕的圖標
@@ -41,28 +41,32 @@ playButton.addEventListener('click', function () {
     }
 });
 
-// 全螢幕功能
-document.getElementById('fullscreen-button').addEventListener('click', function () {
-    const previewContainer = document.querySelector('.preview-container');
-    if (!document.fullscreenElement) {
-        if (previewContainer.requestFullscreen) {
-            previewContainer.requestFullscreen();
-        } else if (previewContainer.webkitRequestFullscreen) {
-            // Safari
-            previewContainer.webkitRequestFullscreen();
-        } else if (previewContainer.msRequestFullscreen) {
-            // IE11
-            previewContainer.msRequestFullscreen();
-        }
-    } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-            // Safari
-            document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-            // IE11
-            document.msExitFullscreen();
-        }
-    }
+// // 全螢幕功能
+// document.getElementById('fullscreen-button').addEventListener('click', function () {
+//     const previewContainer = document.querySelector('.preview-container');
+//     if (!document.fullscreenElement) {
+//         if (previewContainer.requestFullscreen) {
+//             previewContainer.requestFullscreen();
+//         } else if (previewContainer.webkitRequestFullscreen) {
+//             // Safari
+//             previewContainer.webkitRequestFullscreen();
+//         } else if (previewContainer.msRequestFullscreen) {
+//             // IE11
+//             previewContainer.msRequestFullscreen();
+//         }
+//     } else {
+//         if (document.exitFullscreen) {
+//             document.exitFullscreen();
+//         } else if (document.webkitExitFullscreen) {
+//             // Safari
+//             document.webkitExitFullscreen();
+//         } else if (document.msExitFullscreen) {
+//             // IE11
+//             document.msExitFullscreen();
+//         }
+//     }
+// });
+
+speedSlider.addEventListener('input', function () {
+    speedOutput.textContent = `${this.value}x`; // 根據滑桿的值動態更新顯示
 });

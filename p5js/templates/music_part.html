@@ -6,6 +6,16 @@
     <title>選擇動畫</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/music_part.css' %}">
+    <style>
+        #ifrm1 {
+            opacity: 0;
+            transition: opacity 1.5s linear;
+          }
+          .trig1:hover + iframe {
+            opacity: 1;
+            transition: opacity 1.5s linear;
+          }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -26,30 +36,27 @@
             <div class="preview-section">
                 <div class="preview-title">預覽動畫</div>
                 <div class="preview-box">
-                    <img src="{% static 'img/animation.svg' %}" alt="預覽動畫">
+                    {% comment %} <img src="{% static 'img/animation.svg' %}" alt="預覽動畫"> {% endcomment %}
+
+
+                    <iframe id="ifrm1" src = "{% url 'test' %}" id = "myIframe"></iframe>
                 </div>
             </div>
 
             <div class="options-container">
                 <div class="animation-options">
+
+                    {% for segment in task_status.segments %}
                     <div class="option-group">
-                        <div class="option-label">主歌</div>
-                        <button class="option-button">動畫1</button>
+                        <div class="option-label">{{ segment.label }}</div>
+                        <a class="option-button trig1" onmouseover="document.getElementById('ifrm1').style.opacity='1';" onmouseout="document.getElementById('ifrm1').style.opacity='0';">動畫{{ forloop.counter }}</a>
                     </div>
-                    <div class="option-group">
-                        <div class="option-label">副歌</div>
-                        <button class="option-button">動畫2</button>
-                    </div>
-                    <div class="option-group">
-                        <div class="option-label">其他</div>
-                        <button class="option-button">動畫3</button>
-                    </div>
-                    <div class="option-group last-group">
-                        <div class="option-label">純音樂</div>
-                        <button class="option-button">動畫4</button>
-                        <button class="confirm-button">確認</button> <!-- 確認鍵放在這裡 -->
-                    </div>
+                    {% endfor %}
                 </div>
+                <div class="option-group">
+                    <button class="confirm-button">確認</button> <!-- 確認鍵放在這裡 -->
+                </div>
+            </div>
             </div>
         </div>
     </div>

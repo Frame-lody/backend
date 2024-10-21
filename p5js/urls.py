@@ -7,9 +7,9 @@ urlpatterns = [
     # Add more paths here
     # path('sortable/', views.sortable, name='sortable'),
     path('test/', views.test, name='test'),
-    path('adjust/', views.adjust, name='adjust'),
-    path('select_mode/', views.select_mode, name='select_mode'),
-    path('music_part/', views.music_part, name='music_part'),
-    path('pay/', views.pay, name='pay'),
+    path('<str:task_id>/adjust/', views.adjust, name='adjust'),
+    path('<str:task_id>/select_mode/', views.select_mode, name='select_mode'),
+    path('<str:task_id>/music_part/', views.music_part, name='music_part'),
+    path('<str:task_id>/pay/', views.pay, name='pay'),
     path('<str:task_id>/', views.view_task, name='view_task'),
 ]
