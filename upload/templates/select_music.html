@@ -1,15 +1,18 @@
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>選擇音檔</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/select_music.css'%}">
-</head>
-<body>
+{% extends 'base_generic.html' %}
+
+{% block title %}
+<title>選擇音檔</title>
+{% endblock %}
+
+{% block head %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/select_music.css'%}">
+{% endblock head %}
+
+{% block content %}
+<div class="center" data-aos="fade-up" data-aos-easing="ease">
     <div class="container">
-        <div class="progress-bar">
+        <div class="progress-bar-framelody ">
             <div class="step completed" id="step1">1</div>
             <div class="divider" id="divider1"></div>
             <div class="step" id="step2">2</div>
@@ -19,7 +22,7 @@
             <div class="step" id="step4">4</div>
         </div>
         <h1>選擇音檔</h1>
-        <form action="/" method="POST" enctype="multipart/form-data">
+        <form action="/upload/" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="file-select">
                 <div class="file-icon">
@@ -33,6 +36,7 @@
             <input type="submit" class="confirm-button" value="開始上傳" />
         </form>
     </div>
-    <script src="{% static 'js/select_music.js' %}"></script>
-</body>
-</html>
+</div>
+
+<script src="{% static 'js/select_music.js' %}"></script>
+{% endblock content %}

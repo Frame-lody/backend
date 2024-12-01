@@ -21,7 +21,7 @@ from .tasks import long_running_task
 
 
 @login_required
-def home(request):
+def upload(request):
     # 如果是POST請求，就處理表單資料
     if request.method=="POST":
         uploaded_file = request.FILES['file']
@@ -36,6 +36,7 @@ def home(request):
     mediafiles = os.listdir(settings.MEDIA_ROOT)
     return render(request, "select_music.html", locals())
 
+@login_required
 def task_status(request):
     # 若使用者按下"delete"按鈕，則刪除該筆task
     if "delete" in request.POST:
@@ -152,7 +153,7 @@ def insert_structure(request):
             segments=segments_dict
         )
         audio_analysis.save()
-        return redirect('home')
+        return redirect('upload')
     return render(request, "insert_structure.html", locals())
 
 def show_structure(request):

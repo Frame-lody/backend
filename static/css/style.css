@@ -1,0 +1,28 @@
+html { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: inherit; }
+
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    min-height: 100vh; /* 確保背景至少等於視窗高度 */
+    background: linear-gradient(to bottom, #2D4889, #2FA2B8, #30CFD0);
+    background-repeat: no-repeat; /* 禁止重複 */
+    background-size: cover; /* 讓背景適應頁面大小 */
+    background-attachment: fixed; /* 背景固定 */
+}
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.container {
+    /* background: white; */
+    margin-top: 50px;
+    padding: 20px;
+    border-radius: 10px;
+    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+    width: 80%;
+    max-width: 1000px;
+}

@@ -1,64 +1,67 @@
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% include "base_generic.html" %}
+{% block title %}
     <title>選擇動畫</title>
+{% endblock title %}
+{% block head %}
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/music_part.css' %}">
     <style>
-        #ifrm1 {
-            opacity: 0;
-            transition: opacity 1.5s linear;
-          }
-          .trig1:hover + iframe {
-            opacity: 1;
-            transition: opacity 1.5s linear;
-          }
+#ifrm1 {
+opacity: 0;
+transition: opacity 1.5s linear;
+}
+.trig1:hover + iframe {
+opacity: 1;
+transition: opacity 1.5s linear;
+}
     </style>
-</head>
-<body>
-    <div class="container">
-        <div class="progress-bar">
-            <div class="step completed" id="step1">1</div>
-            <div class="divider completed" id="divider1"></div>
-            <div class="step completed" id="step2">2</div>
-            <div class="divider" id="divider2"></div>
-            <div class="step" id="step3">3</div>
-            <div class="divider" id="divider3"></div>
-            <div class="step" id="step4">4</div>
-        </div>
-
-        <h1>選擇動畫</h1>
-        <p>點擊變更預設動畫</p>
-
-        <div class="content-section">
-            <div class="preview-section">
-                <div class="preview-title">預覽動畫</div>
-                <div class="preview-box">
-                    {% comment %} <img src="{% static 'img/animation.svg' %}" alt="預覽動畫"> {% endcomment %}
-
-
-                    <iframe id="ifrm1" src = "{% url 'test' %}" id = "myIframe"></iframe>
-                </div>
+    <script>
+function updateIframe(sketchName) {
+    const iframe = document.getElementById("ifrm1");
+    iframe.src = "{% url 'test' %}?sketch=" + sketchName;
+}
+    </script>
+{% endblock head %}
+{% block content %}
+    <div class="center" data-aos="fade-up" data-aos-easing="ease">
+        <div class="container">
+            <div class="progress-bar-framelody">
+                <div class="step completed" id="step1">1</div>
+                <div class="divider completed" id="divider1"></div>
+                <div class="step completed" id="step2">2</div>
+                <div class="divider" id="divider2"></div>
+                <div class="step" id="step3">3</div>
+                <div class="divider" id="divider3"></div>
+                <div class="step" id="step4">4</div>
             </div>
-
-            <div class="options-container">
-                <div class="animation-options">
-
-                    {% for segment in task_status.segments %}
-                    <div class="option-group">
-                        <div class="option-label">{{ segment.label }}</div>
-                        <a class="option-button trig1" onmouseover="document.getElementById('ifrm1').style.opacity='1';" onmouseout="document.getElementById('ifrm1').style.opacity='0';">動畫{{ forloop.counter }}</a>
+            <h1>選擇動畫</h1>
+            <p>點擊變更預設動畫</p>
+            <div class="content-section">
+                <div class="preview-section">
+                    <div class="preview-title">預覽動畫</div>
+                    <div class="preview-box">
+                        {% comment %} <img src="{% static 'img/animation.svg' %}" alt="預覽動畫"> {% endcomment %}
+                        <iframe id="ifrm1" src="{% url 'test' %}" id="myIframe"></iframe>
                     </div>
-                    {% endfor %}
                 </div>
-                <div class="option-group">
-                    <button class="confirm-button">確認</button> <!-- 確認鍵放在這裡 -->
+                <div class="options-container">
+                    <div class="animation-options">
+                        {% for segment in segments %}
+                            <div class="option-group">
+                                <div class="option-label">{{ segment.label }}</div>
+                                <a class="option-button trig1"
+                                   onmouseover="document.getElementById('ifrm1').style.opacity='1'; updateIframe('{{ segment.sketch }}');"
+                                   onmouseout="document.getElementById('ifrm1').style.opacity='0';"
+                                   href="{% url 'adjust' task_id=task_id order=segment.order %}">動畫{{ forloop.counter }}</a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="option-group">
+                        <button class="confirm-button">確認</button>
+                        <!-- 確認鍵放在這裡 -->
+                    </div>
                 </div>
-            </div>
             </div>
         </div>
     </div>
-</body>
-</html>
+{% endblock content %}

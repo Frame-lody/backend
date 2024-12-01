@@ -1,5 +1,7 @@
 import os
 import time
+import logging
+import random
 
 from celery import shared_task
 from celery.exceptions import Ignore
@@ -8,6 +10,8 @@ from essentia.standard import (MonoLoader, TensorflowPredict2D,
                                TensorflowPredictMusiCNN)
 
 from .models import TaskStatus
+from .models import Segment as SegmentModel
+from django.contrib.auth.models import User
 
 # 分析歌曲結構
 import json  # 引用json模組
@@ -16,22 +20,155 @@ from pathlib import PosixPath  # 引用pathlib模組下的PosixPath類別
 from allin1.typings import *  # 去引用allin1資料夾下的typings.py檔案（型別）
 import allin1
 
-# import cv2
-# import color_map_2d
+import numpy as np
+import os
+import cv2
+import scipy.spatial
 
+
+# 設定 logger
+logger = logging.getLogger(__name__)
+
+# =============== 顏色處理 function ===============
+
+#  顏色權重相關計算
+def get_color_for_point(point_coords, list_of_point_centers, list_of_colors):
+    color = np.array([0.0, 0.0, 0.0])
+    # get distances of the "query" point from all other points
+    distances = scipy.spatial.distance.cdist([point_coords],
+                                            list_of_point_centers)[0]
+
+    # get weights and compute new RGB value as weighted sum:
+    weights = 1 / (distances + 0.1)
+
+    for ic, c in enumerate(list_of_colors):
+        color += (np.array(c) * weights[ic])
+    color /= (np.sum(weights))
+    sum_color = np.sum(color)
+    required_sum_color = 600.0
+    if color.max() * (required_sum_color/sum_color) <= 255:
+        color *= (required_sum_color/sum_color)
+    else:
+        color *= (255/(color.max()))
+    return color
+
+def create_2d_color_map(list_of_points, list_of_colors, height, width):
+    rgb = np.zeros((height, width, 3)).astype("uint8")
+    c_x = int(width / 2)
+    c_y = int(height / 2)
+    step = 3
+    win_size = int((step-1) / 2)
+    for i in range(len(list_of_points)):
+        rgb[c_y - int(list_of_points[i][1] * height / 2),
+            c_x + int(list_of_points[i][0] * width / 2)] = list_of_colors[i]
+    for y in range(win_size, height - win_size, step):
+        for x in range(win_size, width - win_size, step):
+            x_real = (x - width / 2) / (width / 2)
+            y_real = (height / 2 - y ) / (height / 2)
+            color = get_color_for_point([x_real, y_real], list_of_points,
+                                        list_of_colors)
+            rgb[y - win_size - 1 : y + win_size + 1,
+                x - win_size - 1 : x + win_size + 1] = color
+    bgr = cv2.cvtColor(rgb, cv2.COLOR_BGR2RGB)
+    return bgr
+
+# 將1-9範圍轉換到-1到1範圍
+def scale_value(value, old_min, old_max, new_min, new_max):
+    return new_min + (float(value - old_min) / (old_max - old_min) * (new_max - new_min))
+
+# 將AV轉換顏色
+def get_color_from_valence_arousal(valence, arousal, emo_map, height, width):
+    arousal = scale_value(arousal, 1, 9, -1, 1)
+    valence = scale_value(valence, 1, 9, -1, 1)
+
+    y_center, x_center = int(height / 2), int(width / 2)
+    x = x_center + int((width / 2) * valence)
+    y = y_center + int((height / 2) * arousal)
+
+    color = np.median(emo_map[y-2:y+2, x-2:x+2], axis=0).mean(axis=0)
+    return '#{:02x}{:02x}{:02x}'.format(int(color[0]), int(color[1]), int(color[2]))
+
+#將prediction陣列轉換成十六進位的RGB值
+def convert_prediction_to_hex(prediction, emo_map, height, width):
+    result = []
+    for valence, arousal in prediction:
+        valence, arousal = float(valence), float(arousal)
+        color_hex = get_color_from_valence_arousal(valence, arousal, emo_map, height, width)
+        result.append(color_hex)
+    return result
+
+# 將顏色字串陣列和分析結果分割成對應的段落
+def split_colors_by_segments(color_array, segments):
+    print(segments)
+    total_duration = segments[-1]['end']  # 使用最後一個段落的 end 作為歌曲的總時長
+    segment_colors = []
+
+    for segment in segments:
+        start_ratio = segment['start'] / total_duration
+        end_ratio = segment['end'] / total_duration
+
+        start_index = int(start_ratio * len(color_array))
+        end_index = int(end_ratio * len(color_array))
+
+        # 保證每個段落至少有一個顏色
+        if start_index == end_index and start_index < len(color_array):
+            end_index += 1
+
+        segment_colors.append(color_array[start_index:end_index])
+
+    return segment_colors
+
+# 提取最終結果，每個陣列的第一個顏色為例
+def extract_segment_colors(segment_colors):
+    extract_colors = [colors[0] for colors in segment_colors if colors]  # 確保陣列非空
+    return extract_colors
+
+
+# =============== 曲風對應Sketch Function ===============
+
+# 定義標籤和對應的數字範圍
+genre_to_sketch = {
+    "Pop": [1, 3, 7, 17, 18],
+    "Beautiful": [2, 7, 9, 10, 12, 14],
+    "Chillout": [6, 8, 11, 17],
+    "Metal": [4, 7],
+    "Classic Rock": [1, 4, 7],
+    "Blues": [6, 9, 10, 11, 15],
+    "Ambient": [7, 9, 10, 12, 14],
+    "Funk": [5, 8, 17],
+    "Electro": [1, 7],
+    "Sad": [9, 10, 15],
+    "Happy": [3, 5, 13, 16, 17],
+    "Dance": [1, 4, 7, 16, 17, 18],
+    "Mellow": [9, 10, 12],
+    "Party": [1, 4, 16],
+    "Easy Listening": [6, 13, 16, 17],
+    "Folk": [8, 13, 17],
+    "Chill": [6, 8, 11, 17],
+}
+
+# 定義一個函數隨機選擇數字並生成 mySketch?.js
+def get_random_sketch(genre):
+    """隨機根據曲風選擇一個數字並生成 mySketch?.js 文件"""
+    if genre in genre_to_sketch:
+        random_number = random.choice(genre_to_sketch[genre])
+        return f"mySketch{random_number}.js"
+    else:
+        # 如果曲風沒有對應數字，給個默認的文件
+        return "mySketchDefault.js"
+
+
+# =============== task function ===============
 @shared_task(bind=True)
 def long_running_task(self, musicid, user_id, music_name):
-    task_status, created = TaskStatus.objects.get_or_create(task_id=self.request.id, user=user_id, music_name=music_name)
+    user = User.objects.get(id=user_id)
+    task_status, created = TaskStatus.objects.get_or_create(task_id=self.request.id, user=user, music_name=music_name)
     task_status.status = 'IN_PROGRESS'
     task_status.save()
 
     try:
-        # =======For Ham: 把code放在這======
-        predictions = ['#D77186', '#6CB7DA', '#D75725']
-        task_status.result = str(predictions)
-        # =======到這裡結束，請注意把你的結果存成str，到task_status.result======
 
-        # ======= 歌曲段落分析 =======
+        # ============== 歌曲段落分析 ==============
 
         # fake data:
         # 假設已經有一個 AnalysisResult 物件 result
@@ -72,15 +209,140 @@ def long_running_task(self, musicid, user_id, music_name):
 
         segments_dict = merged_segments
 
-        task_status.segments = segments_dict
+        # 存入資料庫
+        # task_status.segments = segments_dict
         task_status.bpm = song_structure.bpm
-        # ==========================
+
+        # ============== 顏色 ==============
+
+        # 定義顏色與情緒位置
+        colors = {
+                "yelllow": [255, 255, 0],
+                "red": [255, 0, 0],
+                "purple": [128, 0, 128],
+                "blue": [0, 0, 255],
+                "green": [0, 255, 0],
+                "cyan": [0, 220, 220],
+
+        }
+
+        happy = [0.444, 0.25]
+        angry = [-0.3267, 0.5618]
+        sad = [-0.444, -0.25]
+        relaxed = [0.25, -0.444]
+        anxious = [-0.4829, 0.1294]
+        calm = [-0.1294, -0.4829]
+
+        emotion_positions = [happy, angry, sad, relaxed, anxious, calm]
+        emotion_colors = [colors["yelllow"], colors["red"], colors["blue"], colors["green"], colors["purple"], colors["cyan"]]
+
+        # 創建情緒顏色地圖
+        width, height = 500, 500
+        emo_map = create_2d_color_map(emotion_positions, emotion_colors, width, height)
+
+        # 去定義essentia model路徑，從settings.py裡面拿
+        # 這裡可以跑essentia的code
+        # os.path.join(settings.MEDIA_ROOT, musicid) 是音樂檔案的路徑
+        # os.path.join(essentia_path, 'msd-musicnn-1.pb') 是模型的路徑
+        input_file_path = os.path.join(settings.MEDIA_ROOT, musicid)
+
+        #音頻分析
+        audio = MonoLoader(filename=input_file_path, sampleRate=48000, resampleQuality=4)()
+        embedding_model = TensorflowPredictMusiCNN(graphFilename=os.path.join(settings.ESSENTIA_PATH, 'msd-musicnn-1.pb'), output='model/dense/BiasAdd')
+        embeddings = embedding_model(audio)
+        model = TensorflowPredict2D(graphFilename=os.path.join(settings.ESSENTIA_PATH, 'deam-msd-musicnn-2.pb'), output='model/Identity')
+        predictions = model(embeddings)
+        #轉換為字串陣列
+        predictions = predictions.astype(str).tolist()
+        #獲取顏色
+        hex_values = []
+        hex_values = convert_prediction_to_hex(predictions, emo_map, height, width)
+        #照段落提取顏色
+        segment_colors = split_colors_by_segments(hex_values, segments_dict)     #segments從資料庫提取
+        extract_colors = extract_segment_colors(segment_colors)     #最終結果！！
+
+        task_status.result = extract_colors
+
+        # predictions = ['#D77186', '#6CB7DA', '#D75725']
+        # task_status.result = str(predictions)
+
+
+        # ============== 處理genre ==============
+        genre_model = TensorflowPredict2D(graphFilename=os.path.join(settings.ESSENTIA_PATH, 'msd-msd-musicnn-1.pb'), input="serving_default_model_Placeholder", output="PartitionedCall")
+        genre_predictions = genre_model(embeddings)
+
+
+        # 定義要取出的標籤索引
+        selected_indices = [
+            1, 6, 10, 11, 12, 14, 17, 20, 22, 25, 27,
+            34, 38, 41, 42, 48, 49
+        ]
+
+        # 取出指定的標籤並儲存成新的 numpy 陣列
+        selected = genre_predictions[:, selected_indices]
+        print(selected)
+
+        # 定義標籤名稱對應的列表
+        tags = [
+            "Pop", "Beautiful", "Chillout", "Metal", "Classic Rock", "Blues", "Ambient",
+            "Funk", "Electro", "Sad", "Happy", "Dance", "Chillout", "Mellow",
+            "Party", "Easy Listening", "Folk", "Chill"
+        ]
+
+        # 找出每一列的前四高值的索引
+        top4 = np.argsort(selected, axis=1)[:, -4:][:, ::-1]
+
+        # 統計每個標籤次數
+        top4_tags = tags  # 標籤與選擇的索引對應
+        tag_counts = {tag: 0 for tag in top4_tags}
+
+        # 計算每個標籤在所有列中的出現次數
+        for indices in top4:
+            for idx in indices:
+                tag_counts[top4_tags[idx]] += 1
+
+        # 找出出現最多次的前四高標籤
+        sorted_tag_counts = sorted(tag_counts.items(), key=lambda x: x[1], reverse=True)
+        # 只取出前四高標籤的名稱
+        final_4_tags = [tag for tag, count in sorted_tag_counts[:4]]
+        task_status.genre = str(final_4_tags)
+        # 輸出結果
+        for tag in final_4_tags:
+            print(tag)
+
+        # ============== 將分析結果存入資料庫 ==============
+
+        for idx, segment in enumerate(segments_dict, start=1):
+            genre = final_4_tags[0] # 取第一個標籤作為曲風
+            sketch_file = get_random_sketch(genre)
+            SegmentModel.objects.create(
+                task_status=task_status,
+                order=idx,
+                duration=segment['end'] - segment['start'],
+                start=segment['start'],
+                end=segment['end'],
+                label=segment['label'],
+                color=extract_colors,
+                bpm=song_structure.bpm,
+                sketch=sketch_file
+            )
 
         task_status.status = 'COMPLETED'
         task_status.save()
         return "Task completed"
-    except Exception as e:
+    except ZeroDivisionError as e:
+        error_message = f"Division by zero: {e}"
+        logger.error(error_message)  # 記錄錯誤日誌
         task_status.status = 'FAILED'
         task_status.result = str(e)
         task_status.save()
-        raise Ignore()
+        # 返回錯誤訊息
+        return {"status": "error", "message": error_message}
+    except Exception as e:
+        error_message = f"Unexpected error: {e}"
+        logger.error(error_message, exc_info=True)  # 記錄完整的回溯
+        task_status.status = 'FAILED'
+        task_status.result = str(e)
+        task_status.save()
+        # 返回錯誤訊息
+        return {"status": "error", "message": error_message}

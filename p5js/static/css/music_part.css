@@ -1,27 +1,16 @@
-body {
-    margin: 5rem 0 0 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    /* align-items: center; */
-    height: 100%;
-    background: linear-gradient(to bottom, #2d4889, #2fa2b8, #30cfd0);
-}
-
 .container {
     text-align: center;
     color: white;
 }
 
-.progress-bar {
+.progress-bar-framelody {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
 }
 
-.progress-bar .divider {
+.progress-bar-framelody .divider {
     flex: none;
     width: 40px;
     height: 4px;

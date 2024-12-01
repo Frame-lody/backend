@@ -1,26 +1,24 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8" />
-    <title>p5.js 自動切換動畫</title>
-    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.js"></script>
-	<!-- <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/addons/p5.sound.min.js"></script> -->
-    <!-- <script src="https://unpkg.com/ml5@1.0.1/dist/ml5.min.js"></script> -->
-    <!-- <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script> -->
-    <script src="https://unpkg.com/ml5@1/dist/ml5.js"></script>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/test.css' %}">
-</head>
-<body>
-    <div id="canvas-container"></div>
-
-    {{ task.segments|json_script:"task.segments" }}
-    <script>
-        const taskSegments = JSON.parse(document.getElementById('task.segments').textContent);
-    </script>
-
-    <script>
-        let sketches = ['{% static "js/mySketch3.js" %}'];
+    <head>
+        <meta charset="utf-8" />
+        <title>p5.js 自動切換動畫</title>
+        <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/addons/p5.sound.min.js"></script> -->
+        <!-- <script src="https://unpkg.com/ml5@1.0.1/dist/ml5.min.js"></script> -->
+        <!-- <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script> -->
+        <script src="https://unpkg.com/ml5@1/dist/ml5.js"></script>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'css/test.css' %}">
+    </head>
+    <body>
+        <div id="canvas-container"></div>
+        {{ task.segments|json_script:"task.segments" }}
+        <script>const taskSegments = JSON.parse(document.getElementById('task.segments').textContent);</script>
+        <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const sketchParam = urlParams.get('sketch');
+        let sketches = [sketchParam ? `{% static "js/" %}${sketchParam}` : '{% static "js/mySketch3.js" %}'];
         let currentSketchIndex = 0;
         let currentP5Instance;
         let previousScript;
@@ -121,10 +119,8 @@
         //setInterval(nextSketch, timeInterval);
 
 
-    </script>
-
-     <!--  確保 hand.js 先加載 -->
-     <script src="{% static 'js/ml5_body.js' %}"></script>
-
-</body>
+        </script>
+        <!--  確保 hand.js 先加載 -->
+        <script src="{% static 'js/ml5_body.js' %}"></script>
+    </body>
 </html>

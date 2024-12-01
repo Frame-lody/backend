@@ -14,7 +14,7 @@ body {
     height: 100vh;
     display: flex;
     flex-direction: column;
-    background-image: url('../img/adjust/background.svg');
+    /* background-image: url('../img/adjust/background.svg'); */
 }
 
 header {
@@ -45,10 +45,10 @@ nav a {
 }
 
 /* 滑鼠移到 <a> 時變成深底淺色 */
-nav a:hover {
+/* nav a:hover {
     background-color: rgb(115, 115, 115);
     color: white;
-}
+} */
 
 .flex-nav {
     display: flex;

@@ -8,6 +8,8 @@ services:
       dockerfile: .devcontainer/django/Dockerfile
     volumes:
       - ..:/workspace:cached
+    image: framelody:1.0  # 建構後的映像名稱
+    container_name: framelody-container
     # ports:
     #   - "8000:8000"
     #   - "5555:5555"

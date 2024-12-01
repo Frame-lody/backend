@@ -19,12 +19,14 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 
-from upload import views
+from upload import views as upload_views
+from users import views as users_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home, name='home'),
-    path('p5/', views.p5),
+    # path('', views.home, name='home'),
+    path('', users_views.home, name = 'home'),
+    path('p5/', upload_views.p5),
     # path('readFile/<str:musicid>/', views.readFile), # 動態路由
     # path('accounts/', include('django.contrib.auth.urls')) # 使用 Django 內建的登入登出頁面
     path('users/', include('users.urls')),

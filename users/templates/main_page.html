@@ -1,20 +1,69 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Document</title>
-    </head>
-    <body>
-        {% csrf_token %}
-        <h1>歡迎來到framelody!</h1>
-        {% if request.user.is_authenticated %}
-            <p>Hi~ {{ request.user }} 您已經登入囉~!</p>
-            <a href="{% url 'log_out' %}">登出</a>
-        {% else %}
-            <p>您尚未登入唷~</p>
-            <a href="{% url 'login' %}">回到登入頁面</a>
-        {% endif %}
-    </body>
-</html>
+{% include "base_generic.html" %}
+
+{% block head %}
+<style>
+{% load static %}
+.center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10rem;
+}
+
+.carousel-caption h5 {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+}
+.carousal-width {
+    width: 50%;
+    margin: 0 auto;
+
+}
+.border-radius {
+    border-radius: 50px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+</style>
+{% endblock head %}
+
+{% block content %}
+<main class="center">
+    <div data-aos="zoom-in">
+        <img class="" src="{% static 'img/Frame-lody.svg' %}" alt="Centered Image">
+    </div>
+
+    <div class="mt-5" data-aos="fade-up" data-aos-easing="ease" data-aos-delay="400" >
+        <a href="{% url 'upload' %}">
+            <img class="img-fluid" src="{% static 'img/Group 61.svg' %}" alt="Link Button">
+        </a>
+    </div>
+    <div class="carousal-width" data-aos="fade-up" data-aos-easing="ease" data-aos-delay="600" >
+        <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner border-radius">
+              <div class="carousel-item active">
+                <img src="{% static 'img/template1.png' %}" class="d-block w-100" alt="...">
+              </div>
+              <div class="carousel-item">
+                <img src="{% static 'img/template2.png' %}" class="d-block w-100" alt="...">
+              </div>
+              <div class="carousel-item">
+                <img src="{% static 'img/template3.png' %}" class="d-block w-100" alt="...">
+              </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+
+
+</main>
+{% endblock content %}

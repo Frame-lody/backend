@@ -5,6 +5,7 @@ from . import views
 # 這裡是http://localhost:8000/upload/後面的路徑
 urlpatterns = [
     # Add more paths here
+    path('', views.upload, name='upload'),
     path('sortable/', views.sortable, name='sortable'),
     path('music/', views.showmusic , name='showmusic'),
     path('music/<int:music_id>/', views.music_detail , name='music_detail'),
