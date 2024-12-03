@@ -11,5 +11,6 @@ urlpatterns = [
     path('<str:task_id>/select_mode/', views.select_mode, name='select_mode'),
     path('<str:task_id>/music_part/', views.music_part, name='music_part'),
     path('<str:task_id>/pay/', views.pay, name='pay'),
-    path('<str:task_id>/', views.view_task, name='view_task'),
+    # path('<str:task_id>/', views.view_task, name='view_task'),
+    path('update-segment-color/', views.update_segment_color, name='update_segment_color'),
 ]

@@ -1,22 +1,54 @@
 let iframe = document.getElementById('myIframe');
-let colors;
-let speed;
+// let colors;
+// let speed;
+
+document.addEventListener('DOMContentLoaded', function () {
+    iframe.src = testUrl + '?colors=' + colors + '&speed=' + speed + '&sketch=' + sketchName;
+});
 
 function updateLabel(colorId) {
-    var colorInput = document.getElementById(colorId);
-    var label = document.querySelector(`label[for=${colorId}]`);
+    let colorInput = document.getElementById(colorId);
+    let label = document.querySelector(`label[for=${colorId}]`);
     label.textContent = colorInput.value.toUpperCase();
 
     let colorArray = [];
     let clr = '';
-    for (let i = 1; i < 4; i++) {
-        clr = document.getElementById(`color${i}`).value;
+    const colorInputs = document.querySelectorAll('[id^="color"]');
+    colorInputs.forEach(input => {
+        clr = input.value;
         colorArray.push(clr);
-    }
+    });
 
     //傳遞顏色給iframe
     colors = encodeURIComponent(colorArray);
-    iframe.src = testUrl + '?colors=' + colors + '&speed=' + speed;
+    iframe.src = testUrl + '?colors=' + colors + '&speed=' + speed + '&sketch=' + sketchName;
+
+    // 將資料送到後端儲存
+    fetch('/p5js/update-segment-color/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken') // 確保有 CSRF Token
+        },
+        body: JSON.stringify({
+            task_id: taskId,  // 傳遞必要的段落 ID
+            color_array: colorArray, // 傳遞顏色陣列
+            order_id: orderId
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Failed to update colors');
+        }
+    })
+    .then(data => {
+        console.log('Colors updated successfully:', data);
+    })
+    .catch(error => {
+        console.error('Error updating colors:', error);
+    });
 }
 
 const speedSlider = document.getElementById('speed');
@@ -27,7 +59,7 @@ speedSlider.addEventListener('input', function () {
 
     //傳遞speed給iframe
     speed = encodeURIComponent(this.value);
-    iframe.src = testUrl + '?speed=' + speed + '&colors=' + colors;
+    iframe.src = testUrl + '?speed=' + speed + '&colors=' + colors + '&sketch=' + sketchName;
 });
 
 // 切換播放按鈕的圖標
@@ -70,3 +102,19 @@ playButton.addEventListener('click', function () {
 speedSlider.addEventListener('input', function () {
     speedOutput.textContent = `${this.value}x`; // 根據滑桿的值動態更新顯示
 });
+
+// Helper: 獲取 CSRF Token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}

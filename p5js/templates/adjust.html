@@ -7,7 +7,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/adjust.css' %}">
 {% endblock head %}
 {% block content %}
-    <main>
+    <main data-aos="fade-up" data-aos-easing="ease">
         <h2>預覽動畫</h2>
         <div class="content-container2">
             <div class="preview-container">
@@ -43,14 +43,22 @@
                            value="1">
                     <output id="speedValue">1x</output>
                 </div>
-                <button class="ok-button">ok</button>
+                <a class="ok-button" href="{% url 'music_part' task_id=task_id %}">ok</a>
             </div>
         </div>
     </main>
+    <script>
+        let colors = {{ segment.color|safe }};
+        colors = encodeURIComponent(colors);
+        let speed = {{ segment.bpm }};
+        let orderId = {{ segment.order }};
+        let taskId = "{{ task_id }}";
+        let sketchName = "{{ segment.sketch }}";
+        console.log('taskid')
+        console.log(taskId);
+        console.log('colors');
+        console.log(colors);
+    </script>
     <script>let testUrl = "{% url 'test' %}"</script>
     <script src="{% static 'js/adjust.js' %}"></script>
-    <script>
-const segment = {{ segment.color|safe }};
-console.log(segment);
-    </script>
 {% endblock content %}

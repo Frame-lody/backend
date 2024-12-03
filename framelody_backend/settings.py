@@ -170,3 +170,22 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
 # 啟用iframe
 X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}

@@ -16,9 +16,17 @@ transition: opacity 1.5s linear;
 }
     </style>
     <script>
-function updateIframe(sketchName) {
+function updateIframe(sketchName, speed, color) {
     const iframe = document.getElementById("ifrm1");
-    iframe.src = "{% url 'test' %}?sketch=" + sketchName;
+    // 1. 替換單引號為雙引號，使其成為合法的 JSON 格式
+    const validJsonString = color.replace(/'/g, '"');
+    // 2. 使用 JSON.parse 將字串轉換為陣列
+    const colorArray = JSON.parse(validJsonString);
+    // 3. 使用 join 方法將陣列轉換為以逗號分隔的字串
+    const colorString = encodeURIComponent(colorArray.join(','));
+    // 結果
+    console.log(colorString)
+    iframe.src = "{% url 'test' %}?sketch=" + sketchName + "&speed=" + speed + "&colors=" + colorString;
 }
     </script>
 {% endblock head %}
@@ -50,7 +58,7 @@ function updateIframe(sketchName) {
                             <div class="option-group">
                                 <div class="option-label">{{ segment.label }}</div>
                                 <a class="option-button trig1"
-                                   onmouseover="document.getElementById('ifrm1').style.opacity='1'; updateIframe('{{ segment.sketch }}');"
+                                   onmouseover="document.getElementById('ifrm1').style.opacity='1'; updateIframe('{{ segment.sketch }}','{{ segment.bpm }}','{{ segment.color|escapejs }}');"
                                    onmouseout="document.getElementById('ifrm1').style.opacity='0';"
                                    href="{% url 'adjust' task_id=task_id order=segment.order %}">動畫{{ forloop.counter }}</a>
                             </div>
