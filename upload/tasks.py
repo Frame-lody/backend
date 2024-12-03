@@ -24,6 +24,7 @@ import numpy as np
 import os
 import cv2
 import scipy.spatial
+import colorsys
 
 
 # 設定 logger
@@ -31,98 +32,58 @@ logger = logging.getLogger(__name__)
 
 # =============== 顏色處理 function ===============
 
-#  顏色權重相關計算
-def get_color_for_point(point_coords, list_of_point_centers, list_of_colors):
-    color = np.array([0.0, 0.0, 0.0])
-    # get distances of the "query" point from all other points
-    distances = scipy.spatial.distance.cdist([point_coords],
-                                            list_of_point_centers)[0]
+# 根據AV對應到HSV
+def calculate_hue_value(valence, arousal):
+    # 計算角度 (Hue)
+    angle = np.arctan2(arousal, valence)  # 計算角度（範圍 -pi 到 pi）
+    hue = (np.degrees(angle) + 360 - 45) % 360  # 平移角度，使 [1, 0] 對應 45°
 
-    # get weights and compute new RGB value as weighted sum:
-    weights = 1 / (distances + 0.1)
+    # 計算距離 (Value)
+    distance = np.sqrt(valence**2 + arousal**2)  # 計算距離
+    value = min(distance, 1.0)  # 限制 Value 最大值為 1
 
-    for ic, c in enumerate(list_of_colors):
-        color += (np.array(c) * weights[ic])
-    color /= (np.sum(weights))
-    sum_color = np.sum(color)
-    required_sum_color = 600.0
-    if color.max() * (required_sum_color/sum_color) <= 255:
-        color *= (required_sum_color/sum_color)
-    else:
-        color *= (255/(color.max()))
-    return color
+    # 固定飽和度
+    saturation = 1
 
-def create_2d_color_map(list_of_points, list_of_colors, height, width):
-    rgb = np.zeros((height, width, 3)).astype("uint8")
-    c_x = int(width / 2)
-    c_y = int(height / 2)
-    step = 3
-    win_size = int((step-1) / 2)
-    for i in range(len(list_of_points)):
-        rgb[c_y - int(list_of_points[i][1] * height / 2),
-            c_x + int(list_of_points[i][0] * width / 2)] = list_of_colors[i]
-    for y in range(win_size, height - win_size, step):
-        for x in range(win_size, width - win_size, step):
-            x_real = (x - width / 2) / (width / 2)
-            y_real = (height / 2 - y ) / (height / 2)
-            color = get_color_for_point([x_real, y_real], list_of_points,
-                                        list_of_colors)
-            rgb[y - win_size - 1 : y + win_size + 1,
-                x - win_size - 1 : x + win_size + 1] = color
-    bgr = cv2.cvtColor(rgb, cv2.COLOR_BGR2RGB)
-    return bgr
+    # 將 HSV 轉換為 RGB
+    r, g, b = colorsys.hsv_to_rgb(hue / 360, saturation, value)
 
-# 將1-9範圍轉換到-1到1範圍
-def scale_value(value, old_min, old_max, new_min, new_max):
-    return new_min + (float(value - old_min) / (old_max - old_min) * (new_max - new_min))
+    # 轉換為 HEX 格式
+    return hue, '#{:02x}{:02x}{:02x}'.format(int(r * 255), int(g * 255), int(b * 255))
 
-# 將AV轉換顏色
-def get_color_from_valence_arousal(valence, arousal, emo_map, height, width):
-    arousal = scale_value(arousal, 1, 9, -1, 1)
-    valence = scale_value(valence, 1, 9, -1, 1)
+# 生成兩個相配的顏色
+def generate_complementary_colors(colors):
+    color_combinations = []
 
-    y_center, x_center = int(height / 2), int(width / 2)
-    x = x_center + int((width / 2) * valence)
-    y = y_center + int((height / 2) * arousal)
+    for color in colors:
+        # 將 HEX 顏色轉換為 RGB
+        rgb = tuple(int(color.lstrip('#')[i:i+2], 16) for i in (0, 2, 4))
+        # 將 RGB 轉換為 HSL
+        h, l, s = colorsys.rgb_to_hls(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255)
 
-    color = np.median(emo_map[y-2:y+2, x-2:x+2], axis=0).mean(axis=0)
-    return '#{:02x}{:02x}{:02x}'.format(int(color[0]), int(color[1]), int(color[2]))
+        # 生成相配顏色
+        complementary_colors = []
 
-#將prediction陣列轉換成十六進位的RGB值
-def convert_prediction_to_hex(prediction, emo_map, height, width):
-    result = []
-    for valence, arousal in prediction:
-        valence, arousal = float(valence), float(arousal)
-        color_hex = get_color_from_valence_arousal(valence, arousal, emo_map, height, width)
-        result.append(color_hex)
-    return result
+        # 第一個相配顏色：根據亮度決定調整
+        if l == 0.5:
+            l1 = 0.8
+        else:
+            l1 = 1 - l
+        rgb1 = colorsys.hls_to_rgb(h, l1, s)
+        hex1 = '#{:02x}{:02x}{:02x}'.format(int(rgb1[0] * 255), int(rgb1[1] * 255), int(rgb1[2] * 255))
+        complementary_colors.append(hex1)
 
-# 將顏色字串陣列和分析結果分割成對應的段落
-def split_colors_by_segments(color_array, segments):
-    print(segments)
-    total_duration = segments[-1]['end']  # 使用最後一個段落的 end 作為歌曲的總時長
-    segment_colors = []
+        # 第二個相配顏色：調整色相
+        h2 = (h + 0.15) % 1.0
+        l2 = (l + l1) / 2
+        rgb2 = colorsys.hls_to_rgb(h2, l2, s)
+        hex2 = '#{:02x}{:02x}{:02x}'.format(int(rgb2[0] * 255), int(rgb2[1] * 255), int(rgb2[2] * 255))
+        complementary_colors.append(hex2)
 
-    for segment in segments:
-        start_ratio = segment['start'] / total_duration
-        end_ratio = segment['end'] / total_duration
+        # 添加結果
+        color_combinations.extend(complementary_colors)
 
-        start_index = int(start_ratio * len(color_array))
-        end_index = int(end_ratio * len(color_array))
-
-        # 保證每個段落至少有一個顏色
-        if start_index == end_index and start_index < len(color_array):
-            end_index += 1
-
-        segment_colors.append(color_array[start_index:end_index])
-
-    return segment_colors
-
-# 提取最終結果，每個陣列的第一個顏色為例
-def extract_segment_colors(segment_colors):
-    extract_colors = [colors[0] for colors in segment_colors if colors]  # 確保陣列非空
-    return extract_colors
-
+    return color_combinations
 
 # =============== 曲風對應Sketch Function ===============
 
@@ -215,59 +176,58 @@ def long_running_task(self, musicid, user_id, music_name):
 
         # ============== 顏色 ==============
 
-        # 定義顏色與情緒位置
-        colors = {
-                "yelllow": [255, 255, 0],
-                "red": [255, 0, 0],
-                "purple": [128, 0, 128],
-                "blue": [0, 0, 255],
-                "green": [0, 255, 0],
-                "cyan": [0, 220, 220],
-
-        }
-
-        happy = [0.444, 0.25]
-        angry = [-0.3267, 0.5618]
-        sad = [-0.444, -0.25]
-        relaxed = [0.25, -0.444]
-        anxious = [-0.4829, 0.1294]
-        calm = [-0.1294, -0.4829]
-
-        emotion_positions = [happy, angry, sad, relaxed, anxious, calm]
-        emotion_colors = [colors["yelllow"], colors["red"], colors["blue"], colors["green"], colors["purple"], colors["cyan"]]
-
-        # 創建情緒顏色地圖
-        width, height = 500, 500
-        emo_map = create_2d_color_map(emotion_positions, emotion_colors, width, height)
-
         # 去定義essentia model路徑，從settings.py裡面拿
         # 這裡可以跑essentia的code
         # os.path.join(settings.MEDIA_ROOT, musicid) 是音樂檔案的路徑
         # os.path.join(essentia_path, 'msd-musicnn-1.pb') 是模型的路徑
         input_file_path = os.path.join(settings.MEDIA_ROOT, musicid)
 
-        #音頻分析
-        audio = MonoLoader(filename=input_file_path, sampleRate=48000, resampleQuality=4)()
-        embedding_model = TensorflowPredictMusiCNN(graphFilename=os.path.join(settings.ESSENTIA_PATH, 'msd-musicnn-1.pb'), output='model/dense/BiasAdd')
-        embeddings = embedding_model(audio)
-        model = TensorflowPredict2D(graphFilename=os.path.join(settings.ESSENTIA_PATH, 'deam-msd-musicnn-2.pb'), output='model/Identity')
-        predictions = model(embeddings)
-        #轉換為字串陣列
-        predictions = predictions.astype(str).tolist()
-        #獲取顏色
-        hex_values = []
-        hex_values = convert_prediction_to_hex(predictions, emo_map, height, width)
-        #照段落提取顏色
-        segment_colors = split_colors_by_segments(hex_values, segments_dict)     #segments從資料庫提取
-        extract_colors = extract_segment_colors(segment_colors)     #最終結果！！
+        '''### 使用者輸入音檔的路徑 ###'''
+        loader = MonoLoader(filename=input_file_path, sampleRate=16000, resampleQuality=4)
+        waveform = loader()
+        musicnn_graph = os.path.join(settings.ESSENTIA_PATH, 'msd-musicnn-1.pb')
+        embedding_model = TensorflowPredictMusiCNN(graphFilename=musicnn_graph, output="model/dense/BiasAdd", patchHopSize=187)
+        audio_embeddings = embedding_model(waveform)
 
-        task_status.result = extract_colors
+        # 分類器模型路徑
+        classifier_graph = os.path.join(settings.ESSENTIA_PATH, 'emomusic-msd-musicnn-1.pb')
+
+        # 使用正確的輸入節點、正確的輸出節點
+        classifier = TensorflowPredict2D(graphFilename=classifier_graph, input="model/Placeholder",  output="model/Identity")
+        print("開始進行預測...")
+        predictions = classifier(audio_embeddings)
+        print("預測完成！")
+
+        # predictions處理
+        predictions = np.median(predictions.squeeze(), axis=0)
+        # 將範圍從 (1, 9) 改到 (-1, 1)
+        predictions = (predictions - 5) / 4
+
+        # 提取 Valence 和 Arousal
+        print(predictions)
+        ''' predictions格式 - [0.5 0.5] '''
+
+        hex_values = []
+        _, hex_value = calculate_hue_value(predictions[0], predictions[1])
+        hex_values.append(hex_value)
+
+        # 生成相配顏色
+        color_result = generate_complementary_colors(hex_values)
+        # 添加原始顏色至結果
+        color_result.insert(0, hex_value)
+        print(color_result)
+        task_status.result = color_result
+        ''' color_result - ['#ff0000', '#ffff00', '#00ff00'] '''
+
 
         # predictions = ['#D77186', '#6CB7DA', '#D75725']
         # task_status.result = str(predictions)
 
 
         # ============== 處理genre ==============
+        audio = MonoLoader(filename=input_file_path, sampleRate=48000, resampleQuality=4)()
+        embedding_model = TensorflowPredictMusiCNN(graphFilename=os.path.join(settings.ESSENTIA_PATH, 'msd-musicnn-1.pb'), output='model/dense/BiasAdd')
+        embeddings = embedding_model(audio)
         genre_model = TensorflowPredict2D(graphFilename=os.path.join(settings.ESSENTIA_PATH, 'msd-msd-musicnn-1.pb'), input="serving_default_model_Placeholder", output="PartitionedCall")
         genre_predictions = genre_model(embeddings)
 
@@ -322,7 +282,7 @@ def long_running_task(self, musicid, user_id, music_name):
                 start=segment['start'],
                 end=segment['end'],
                 label=segment['label'],
-                color=extract_colors,
+                color=color_result,
                 bpm=song_structure.bpm,
                 sketch=sketch_file
             )
