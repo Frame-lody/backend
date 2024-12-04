@@ -44,6 +44,7 @@ function updateIframe(sketchName, speed, color) {
             </div>
             <h1>選擇動畫</h1>
             <p>點擊變更預設動畫</p>
+            {% if task_status.music_url %}<button id="button">經過我</button>{% endif %}
             <div class="content-section">
                 <div class="preview-section">
                     <div class="preview-title">預覽動畫</div>
@@ -58,8 +59,11 @@ function updateIframe(sketchName, speed, color) {
                             <div class="option-group">
                                 <div class="option-label">{{ segment.label }}</div>
                                 <a class="option-button trig1"
-                                   onmouseover="document.getElementById('ifrm1').style.opacity='1'; updateIframe('{{ segment.sketch }}','{{ segment.bpm }}','{{ segment.color|escapejs }}');"
-                                   onmouseout="document.getElementById('ifrm1').style.opacity='0';"
+                                   data-start="{{ segment.start }}"
+                                   data-end="{{ segment.end }}"
+                                   data-order="{{ segment.order }}"
+                                   onmouseover="document.getElementById('ifrm1').style.opacity='1'; updateIframe('{{ segment.sketch }}','{{ segment.bpm }}','{{ segment.color|escapejs }}'); playSegment(this);"
+                                   onmouseout="document.getElementById('ifrm1').style.opacity='0'; stopSegment()"
                                    href="{% url 'adjust' task_id=task_id order=segment.order %}">動畫{{ forloop.counter }}</a>
                             </div>
                         {% endfor %}
@@ -72,4 +76,77 @@ function updateIframe(sketchName, speed, color) {
             </div>
         </div>
     </div>
+    <script>
+        (function () {
+            // 確保瀏覽器支持 AudioContext
+            if (!window.AudioContext) {
+                alert('當前瀏覽器不支援 Web Audio API');
+                return;
+            }
+
+            const audioContext = new AudioContext();
+            let audioBuffer = null; // 存儲音頻緩衝區
+            let audioSource = null; // 存儲音頻源
+            let segmentEndTimeout = null; // 用來控制片段停止的定時器
+
+            // 加載音頻文件
+            function loadAudioFile(url) {
+                fetch(url)
+                    .then(response => response.arrayBuffer())
+                    .then(data => audioContext.decodeAudioData(data))
+                    .then(buffer => {
+                        audioBuffer = buffer; // 保存音頻緩衝區
+                    })
+                    .catch(error => console.error('音頻加載錯誤:', error));
+            }
+
+            // 播放指定片段
+            window.playSegment = function (button) {
+                // 獲取 start 和 end 時間
+                const start = parseInt(button.getAttribute('data-start')) / 1000; // 毫秒轉秒
+                const end = parseInt(button.getAttribute('data-end')) / 1000;
+
+                // 確保音頻已經加載
+                if (!audioBuffer) {
+                    alert('音頻尚未加載，請稍後再試');
+                    return;
+                }
+
+                // 停止當前的播放，並重置時間
+                if (audioSource) {
+                    audioSource.stop();
+                }
+
+                // 創建新的音頻源節點
+                audioSource = audioContext.createBufferSource();
+                audioSource.buffer = audioBuffer; // 設置音頻緩衝區
+                audioSource.connect(audioContext.destination); // 連接到輸出
+
+                // 設置開始播放的時間
+                audioSource.start(0, start); // 從 start 時間開始播放
+
+                // 設定停止點
+                if (segmentEndTimeout) {
+                    clearTimeout(segmentEndTimeout);
+                }
+                segmentEndTimeout = setTimeout(() => {
+                    audioSource.stop(); // 停止播放
+                }, (end - start) * 1000); // 播放指定的時間長度
+            };
+
+            // 停止播放片段
+            window.stopSegment = function () {
+                if (audioSource) {
+                    audioSource.stop();
+                }
+                if (segmentEndTimeout) {
+                    clearTimeout(segmentEndTimeout);
+                }
+            };
+
+            // 加載音樂文件
+            loadAudioFile("{{ task_status.music_url }}"); // 替換為你的 MP3 文件路徑
+        })();
+
+    </script>
 {% endblock content %}

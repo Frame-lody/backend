@@ -278,9 +278,9 @@ def long_running_task(self, musicid, user_id, music_name):
             SegmentModel.objects.create(
                 task_status=task_status,
                 order=idx,
-                duration=segment['end'] - segment['start'],
-                start=segment['start'],
-                end=segment['end'],
+                duration=(segment['end'] - segment['start'])*1000,
+                start=(segment['start'])*1000,
+                end=(segment['end'])*1000,
                 label=segment['label'],
                 color=color_result,
                 bpm=song_structure.bpm,
