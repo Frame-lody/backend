@@ -122,7 +122,9 @@
                 <tbody>
                     {% for task in tasks %}
                         <tr>
-                            <td>{{ task.music_name }}</td>
+                            <td>
+                                <a href="{{ task.music_url }}">{{ task.music_name }}</a>
+                            </td>
                             <td>
                                 <a href="{% url 'music_part' task.task_id %}">{{ task.task_id }}</a>
                             </td>
