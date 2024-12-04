@@ -27,10 +27,11 @@ def upload(request):
         uploaded_file = request.FILES['file']
         fss = FileSystemStorage()
         file = fss.save(uploaded_file.name, uploaded_file)
+        file_url = fss.url(file)
         # 將音樂分析資訊存到資料庫
         user_id = request.user.id
         task = long_running_task.delay(musicid=file, user_id=user_id, music_name=file)
-        TaskStatus.objects.create(user=request.user, task_id=task.id, status='PENDING', music_name=file)
+        TaskStatus.objects.create(user=request.user, task_id=task.id, status='PENDING', music_name=file, music_url=file_url)
         return redirect(reverse('music_part', kwargs={'task_id': task.id}))
     # 將所有media資料夾裡的檔案列出來
     mediafiles = os.listdir(settings.MEDIA_ROOT)
