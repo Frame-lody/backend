@@ -17,6 +17,10 @@ body {
     /* background-image: url('../img/adjust/background.svg'); */
 }
 
+h2 {
+    margin: 50px 0;
+}
+
 header {
     padding: 10px 20px;
     background-color: #4b0082; /* 模擬頂部的紫色背景 */
@@ -26,7 +30,7 @@ main {
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    /* justify-content: center; */
     align-items: center;
 }
 
@@ -236,17 +240,79 @@ iframe {
 }
 
 .ok-button {
-    margin-top: 30px;
-    padding: 10px 20px;
-    font-size: 1.5em;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 2px solid white;
-    color: white;
-    cursor: pointer;
-    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.8);
     align-self: center;
+    color: black;
+    font-size: 24px;
+    font-weight: bold;
+    padding: 15px 50px;
+    border: none;
+    border-radius: 50px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
 }
 
 .ok-button:hover {
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* 按鈕容器 */
+.playbtn {
+    display: flex;
+    justify-content: space-around;
+    margin: 2rem 0;
+}
+
+/* 按鈕基礎樣式 */
+.custom-button {
+    background: linear-gradient(45deg, #3498db, #9b59b6);
+    border: none;
+    border-radius: 50px;
+    color: white;
+    padding: 15px 40px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 按鈕懸停效果 */
+.custom-button:hover {
+    background: linear-gradient(45deg, #9b59b6, #3498db);
+    transform: scale(1.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* 動態光影效果 */
+/* .custom-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0) 60%);
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.5s ease-in-out;
+    border-radius: 50%;
+    z-index: 1;
+} */
+
+.custom-button:hover::before {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* 停止按鈕的特別樣式 */
+.custom-button.stop {
+    background: linear-gradient(45deg, #e74c3c, #e67e22);
+}
+
+.custom-button.stop:hover {
+    background: linear-gradient(45deg, #e67e22, #e74c3c);
 }
