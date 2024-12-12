@@ -10,7 +10,7 @@
     let speed = urlParams.get('speed'); // 使用 get() 方法來獲取指定參數的值
     //console.log(key); // "value"
 
-    let movingSpeed = speed || 1;
+    let movingSpeed = speed/100 || 1;
     let freq = 300 / movingSpeed;
     let R, s;
     let hexagons;

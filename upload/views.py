@@ -32,7 +32,7 @@ def upload(request):
         user_id = request.user.id
         task = long_running_task.delay(musicid=file, user_id=user_id, music_name=file)
         TaskStatus.objects.create(user=request.user, task_id=task.id, status='PENDING', music_name=file, music_url=file_url)
-        return redirect(reverse('music_part', kwargs={'task_id': task.id}))
+        return redirect(reverse('show', kwargs={'task_id': task.id}))
     # 將所有media資料夾裡的檔案列出來
     mediafiles = os.listdir(settings.MEDIA_ROOT)
     return render(request, "select_music.html", locals())

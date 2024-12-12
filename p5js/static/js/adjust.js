@@ -54,13 +54,64 @@ function updateLabel(colorId) {
 const speedSlider = document.getElementById('speed');
 const speedOutput = document.getElementById('speedValue');
 
-speedSlider.addEventListener('input', function () {
-    speedOutput.textContent = `${this.value}x`; // 根據滑桿的值動態更新顯示
 
-    //傳遞speed給iframe
-    speed = encodeURIComponent(this.value);
-    iframe.src = testUrl + '?speed=' + speed + '&colors=' + colors + '&sketch=' + sketchName;
-});
+// 防抖函數：在滑桿停止變動後才執行請求
+function debounce(func, delay) {
+    let timeout;
+    return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), delay);
+    };
+}
+
+// 更新滑桿顯示與向後端傳遞資料
+function updateSpeed(value) {
+    // 更新顯示
+    speedOutput.textContent = `BPM: ${value}`;
+
+    // 傳遞 speed 給 iframe
+    const speed = encodeURIComponent(value);
+    iframe.src = `${testUrl}?speed=${speed}&colors=${colors}&sketch=${sketchName}`;
+
+    // 傳遞資料到後端儲存
+    fetch('/p5js/update-bpm/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken') // CSRF Token
+        },
+        body: JSON.stringify({
+            task_id: taskId,  // 必要的參數
+            bpm: value      // 新增滑桿速度
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Failed to update speed');
+        }
+    })
+    .then(data => {
+        console.log('Speed updated successfully:', data);
+    })
+    .catch(error => {
+        console.error('Error updating speed:', error);
+    });
+}
+
+// 綁定滑桿事件（使用防抖）
+const debouncedUpdateSpeed = debounce((event) => updateSpeed(event.target.value), 300);
+
+speedSlider.addEventListener('input', debouncedUpdateSpeed);
+
+// speedSlider.addEventListener('input', function () {
+//     speedOutput.textContent = `BPM: ${this.value}`; // 根據滑桿的值動態更新顯示
+
+//     //傳遞speed給iframe
+//     speed = encodeURIComponent(this.value);
+//     iframe.src = testUrl + '?speed=' + speed + '&colors=' + colors + '&sketch=' + sketchName;
+// });
 
 // 切換播放按鈕的圖標
 const playButton = document.querySelector('.play-button');
@@ -98,10 +149,6 @@ playButton.addEventListener('click', function () {
 //         }
 //     }
 // });
-
-speedSlider.addEventListener('input', function () {
-    speedOutput.textContent = `${this.value}x`; // 根據滑桿的值動態更新顯示
-});
 
 // Helper: 獲取 CSRF Token
 function getCookie(name) {

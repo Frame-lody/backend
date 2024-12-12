@@ -167,8 +167,18 @@ def long_running_task(self, musicid, user_id, music_name):
                 merged_segments[-1]['end'] = segment['end']
             else:
                 merged_segments.append(segment)
+        # 合併短於0.5秒的segments
+        final_segments = []
+        for i, segment in enumerate(merged_segments):
+            if i < len(merged_segments) - 1 and (segment['end'] - segment['start']) < 0.5:
+                merged_segments[i + 1]['start'] = segment['start']
+            else:
+                final_segments.append(segment)
 
-        segments_dict = merged_segments
+        segments_dict = final_segments
+
+
+        # segments_dict = merged_segments
 
         # 存入資料庫
         # task_status.segments = segments_dict

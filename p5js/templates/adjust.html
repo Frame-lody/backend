@@ -28,19 +28,32 @@
                 <script>
                 document.getElementById('fullscreen-button').addEventListener('click', function() {
                     const iframe = document.getElementById('myIframe');
+
                     if (iframe.requestFullscreen) {
                         iframe.requestFullscreen();
+                        iframe.src = iframe.src;
                     } else if (iframe.mozRequestFullScreen) { // Firefox
                         iframe.mozRequestFullScreen();
+                        iframe.src = iframe.src;
                     } else if (iframe.webkitRequestFullscreen) { // Chrome, Safari and Opera
                         iframe.webkitRequestFullscreen();
+                        iframe.src = iframe.src;
                     } else if (iframe.msRequestFullscreen) { // IE/Edge
                         iframe.msRequestFullscreen();
+                        iframe.src = iframe.src;
+                    }
+                });
+                document.addEventListener('fullscreenchange', function() {
+                    if (!document.fullscreenElement) {
+                        const iframe = document.getElementById('myIframe');
+                        iframe.src = iframe.src;
                     }
                 });
                 </script>
             </div>
             <div class="settings-container">
+                <a class="ok-button"
+                   href="{% url 'select_mode' task_id=task_id order=order_id %}">更改動畫樣式</a>
                 <div class="color-selection">
                     {% for color in segment.color %}
                         <label for="color{{ forloop.counter }}">{{ color }}</label>
@@ -59,11 +72,11 @@
                     <input type="range"
                            id="speed"
                            name="speed"
-                           min="0.5"
-                           max="16"
-                           step="0.5"
-                           value="1">
-                    <output id="speedValue">1x</output>
+                           min="40"
+                           max="200"
+                           step="1"
+                           value="segment.bpm">
+                    <output id="speedValue">BPM: {{ segment.bpm }}</output>
                 </div>
                 <a class="ok-button" href="{% url 'music_part' task_id=task_id %}">ok</a>
             </div>

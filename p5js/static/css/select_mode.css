@@ -1,4 +1,4 @@
-body {
+/* body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
@@ -6,15 +6,15 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: linear-gradient(to bottom, #2d4889, #2fa2b8, #30cfd0);
-}
+    background: linear-gradient(to bottom, #2D4889, #2FA2B8, #30CFD0);
+} */
 
-.container {
+/* .container {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
-}
+} */
 
 .mode-container {
     display: flex;
@@ -92,35 +92,146 @@ h2 {
     z-index: -1; /* 確保它在按鈕下方 */
 }
 
-/* 為每個按鈕設定背景圖片 */
 .button-1 {
-    background-image: url('../img/mode1.svg');
+    background-image: url('../img/select_mode/simple1.png');
+}
+
+.button-1:hover {
+    background-image: url('../img/select_mode/simple1.gif');
 }
 
 .button-2 {
-    background-image: url('../img/mode2.svg');
+    background-image: url('../img/select_mode/simple2.png');
+}
+
+.button-2:hover {
+    background-image: url('../img/select_mode/simple2.gif');
 }
 
 .button-3 {
-    background-image: url('../img/mode3.svg');
+    background-image: url('../img/select_mode/simple3.png');
+}
+
+.button-3:hover {
+    background-image: url('../img/select_mode/simple3.gif');
 }
 
 .button-4 {
-    background-image: url('../img/mode4.svg');
+    background-image: url('../img/select_mode/simple4.png');
+}
+
+.button-4:hover {
+    background-image: url('../img/select_mode/simple4.gif');
 }
 
 .button-5 {
-    background-image: url('../img/mode1.svg');
+    background-image: url('../img/select_mode/simple5.png');
+}
+
+.button-5:hover {
+    background-image: url('../img/select_mode/simple5.gif');
 }
 
 .button-6 {
-    background-image: url('../img/mode2.svg');
+    background-image: url('../img/select_mode/simple6.png');
+}
+
+.button-6:hover {
+    background-image: url('../img/select_mode/simple6.gif');
 }
 
 .button-7 {
-    background-image: url('../img/mode3.svg');
+    background-image: url('../img/select_mode/simple7.png');
+}
+
+.button-7:hover {
+    background-image: url('../img/select_mode/simple7.gif');
 }
 
 .button-8 {
-    background-image: url('../img/mode4.svg');
+    background-image: url('../img/select_mode/simple8.png');
+}
+
+.button-8:hover {
+    background-image: url('../img/select_mode/simple8.gif');
+}
+
+.button-9 {
+    background-image: url('../img/select_mode/simple9.png');
+}
+
+.button-9:hover {
+    background-image: url('../img/select_mode/simple9.gif');
+}
+
+.button-10 {
+    background-image: url('../img/select_mode/simple10.png');
+}
+
+.button-10:hover {
+    background-image: url('../img/select_mode/simple10.gif');
+}
+
+.button-11 {
+    background-image: url('../img/select_mode/move1.png');
+}
+
+.button-11:hover {
+    background-image: url('../img/select_mode/move1.gif');
+}
+
+.button-12 {
+    background-image: url('../img/select_mode/move2.png');
+}
+
+.button-12:hover {
+    background-image: url('../img/select_mode/move2.gif');
+}
+
+.button-13 {
+    background-image: url('../img/select_mode/move3.jpg');
+}
+
+.button-13:hover {
+    background-image: url('../img/select_mode/move3.gif');
+}
+
+.button-14 {
+    background-image: url('../img/select_mode/move4.png');
+}
+
+.button-14:hover {
+    background-image: url('../img/select_mode/move4.gif');
+}
+
+.button-15 {
+    background-image: url('../img/select_mode/move5.png');
+}
+
+.button-15:hover {
+    background-image: url('../img/select_mode/move5.gif');
+}
+
+.button-16 {
+    background-image: url('../img/select_mode/move6.png');
+}
+
+.button-16:hover {
+    background-image: url('../img/select_mode/move6.gif');
+}
+
+.button-17 {
+    background-image: url('../img/select_mode/move7.png');
+}
+
+.button-17:hover {
+    background-image: url('../img/select_mode/move7.gif');
+}
+
+.button-18 {
+    background-image: url('../img/select_mode/move8.png');
+}
+
+.button-18:hover {
+    background-image: url('../img/select_mode/move8.gif');
 }

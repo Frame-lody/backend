@@ -42,7 +42,7 @@ function updateIframe(sketchName, speed, color) {
                 <div class="divider" id="divider3"></div>
                 <div class="step" id="step4">4</div>
             </div>
-            <h1>選擇動畫</h1>
+            <h1>自定義動畫</h1>
             <p>
                 將滑鼠移動至對應段落，將會顯示動畫及播放段落音樂
                 <br>
@@ -50,9 +50,12 @@ function updateIframe(sketchName, speed, color) {
             </p>
             <div class="content-section">
                 <div class="preview-section">
+                    <div>
+                        <p>偵測主要曲風: {{ task_status.genre }}</p>
+                        <p>速度: {{ task_status.bpm }}</p>
+                    </div>
                     <div class="preview-title">預覽動畫</div>
                     <div class="preview-box">
-                        {% comment %} <img src="{% static 'img/animation.svg' %}" alt="預覽動畫"> {% endcomment %}
                         <iframe id="ifrm1" src="{% url 'test' %}" id="myIframe"></iframe>
                     </div>
                 </div>
@@ -72,7 +75,7 @@ function updateIframe(sketchName, speed, color) {
                         {% endfor %}
                     </div>
                     <div class="option-group">
-                        <button class="confirm-button">確認</button>
+                        <a class="confirm-button" href="{% url 'show' task_id=task_id %}">確認</a>
                         <!-- 確認鍵放在這裡 -->
                     </div>
                 </div>
