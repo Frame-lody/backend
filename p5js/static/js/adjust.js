@@ -82,7 +82,8 @@ function updateSpeed(value) {
         },
         body: JSON.stringify({
             task_id: taskId,  // 必要的參數
-            bpm: value      // 新增滑桿速度
+            bpm: value,      // 新增滑桿速度
+            order_id: orderId
         })
     })
     .then(response => {

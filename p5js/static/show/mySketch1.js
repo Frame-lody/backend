@@ -1,17 +1,23 @@
 (function() {
 
+  let urlParams = new URLSearchParams(window.location.search);   // 創建一個 URLSearchParams 的物件用來解析查詢字串
+  // let speed = urlParams.get('speed'); // 使用 get() 方法來獲取指定參數的值
+
+  // let speed; //設定速度，數字為bpm = 100的多少倍
+
   //長方形內含旋轉圓圈效果
   let rectangle;
   let offset = 0;
   let palette;
-  let movingSpeed = 1;
+  let movingSpeed = speed?speed*0.52:0.52;
+  // let changeColors ;//設定顏色 let changeColors = ["#9EF2BB","#6CBAF4","#4AD0E8",]
 
   window.sketch = function(p) {
     p.setup = function() {
       p.createCanvas(p.windowWidth, p.windowHeight);
       p.colorMode(p.HSB, 360, 100, 100, 100);
       p.angleMode(p.DEGREES);
-      palette = p.random(colorScheme).colors.concat();
+      palette =changeColors?changeColors:p.random(colorScheme).colors.concat();
       rectangle = new Rectangle(
         0,
         0,

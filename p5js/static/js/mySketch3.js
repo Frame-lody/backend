@@ -8,6 +8,11 @@
 
     let urlParams = new URLSearchParams(window.location.search); // 創建一個 URLSearchParams 的物件用來解析查詢字串
     let speed = urlParams.get('speed'); // 使用 get() 方法來獲取指定參數的值
+    let colors = urlParams.get('colors');
+    let palette = colors ? colors.split(',') : originalpalette;
+    console.log("====in Adjust====");
+    console.log(palette);
+    console.log("=================");
     //console.log(key); // "value"
 
     let movingSpeed = speed/100 || 1;
@@ -16,11 +21,10 @@
     let hexagons;
     let global_n = 0;
 
-    let colors = urlParams.get('colors');
+
     //console.log(colors);
 
     // 將 colors 字串轉換為陣列
-    let palette = colors ? colors.split(',') : originalpalette;
     console.log(palette);
 
     window.sketch = function (p) {

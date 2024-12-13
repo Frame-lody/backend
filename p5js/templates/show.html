@@ -11,43 +11,91 @@
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/test.css' %}">
     <style>
+        /* 起始按鈕樣式 */
         #start-button {
+            font-family: 'Arial', sans-serif;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 10px 20px;
-            font-size: 20px;
-            background-color: #000;
-            color: #fff;
-            border: 2px solid #fff;
-            cursor: pointer;
-            display: block;
+            transform: translate(-120%, -50%);
+            background-color: #6B8E23; /* 深文青色系 */
+            color: #FFFFFF;
+            border: 2px solid #556B2F; /* 更深文青色系邊框 */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            display: inline-block;
         }
 
         #start-button:hover {
-            background-color: #fff;
-            color: #000;
+            background-color: #556B2F; /* 深藍色 */
+            color: #FFFFFF;
+            transform: translate(-120%, -50%) scale(1.05);
+            outline: none;
+            box-shadow: 0 0 8px rgba(85, 107, 47, 0.41);
+        }
+
+        /* 編輯按鈕樣式 */
+        .edit-button {
+            font-family: 'Arial', sans-serif;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(120%, -50%);
+            background-color:rgb(31, 114, 182); /* 藍色文青色系 */
+            color: #FFFFFF;
+            border: 2px solid #4169E1; /* 深藍色文青色系邊框 */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .edit-button:hover {
+            background-color: #4169E1; /* 深綠色 */
+            color: #FFFFFF;
+            transform: translate(120%, -50%) scale(1.05);
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.8);
         }
     </style>
 {% endblock head %}
 {% block content %}
     <div id="canvas-container"></div>
     <button id="start-button">點擊開始</button>
+    <a class="edit-button" href="{% url 'music_part' task_id=task_id %}">編輯</a>
     <script>
         let segments = {{ segments_json|safe }};
-        let sketches = segments.map(segment => `{% static "js/" %}${segment.fields.sketch}`);
-        console.log('sketches')
-        console.log(sketches);
-        //let sketches = ['mySketch1.js'];
-
-        //let timeInterval = 0;
-
+        let sketches = segments.map(segment => `{% static "show/" %}${segment.fields.sketch}`);
         let times = segments.map(segment => `${segment.fields.duration}`);
+        let allColors = segments.map(segment => segment.fields.color);
+        let allBpm = segments.map(segment => (segment.fields.bpm/100));
         console.log('times');
         console.log(times);
-        //let times = [10000];
+        console.log('sketches')
+        console.log(sketches);
+        console.log('allColors');
+        console.log(allColors);
+        console.log('allBpm');
+        console.log(allBpm);
 
+        //let sketches = ['mySketch1.js'];
+        //let timeInterval = 0;
+        //let times = [10000];
 
         //設定顏色
         // window.bgcolor = [
@@ -59,17 +107,15 @@
         //     "#6CBAF4",
         //     "#4AD0E8"];
 
-
         // let mic;
         // let audioStarted = false;
-
-
 
         let audio; // 音樂對象
         let isMusicReady = false; // 音樂是否準備好
         let currentP5Instance = null; // 當前的 p5.js 實例
         let previousScript = null; // 當前的 sketch 腳本
         let currentSketchIndex = 0; // 當前動畫索引
+
         function clearPreviousCanvas() {
             if (currentP5Instance) {
                 currentP5Instance.remove();
@@ -113,6 +159,8 @@
 
             loadSketch(sketches[currentSketchIndex]);
 
+            speed = allBpm[currentSketchIndex];
+            changeColors = allColors[currentSketchIndex];
             let currentInterval = times[currentSketchIndex];
             console.log(currentInterval);
 

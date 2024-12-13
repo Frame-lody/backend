@@ -13,12 +13,10 @@
     </head>
     <body>
         <div id="canvas-container"></div>
-        {{ task.segments|json_script:"task.segments" }}
-        <script>const taskSegments = JSON.parse(document.getElementById('task.segments').textContent);</script>
         <script>
         const urlParams = new URLSearchParams(window.location.search);
         const sketchParam = urlParams.get('sketch');
-        let sketches = [sketchParam ? `{% static "js/" %}${sketchParam}` : '{% static "js/mySketch3.js" %}'];
+        let sketches = [sketchParam ? `{% static "adjust/" %}${sketchParam}` : '{% static "adjust/mySketch3.js" %}'];
         let currentSketchIndex = 0;
         let currentP5Instance;
         let previousScript;
