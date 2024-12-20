@@ -21,7 +21,7 @@
             <div class="preview-container">
                 <iframe src = "{% url 'test' %}" id = "myIframe"></iframe>
                 <!-- <div class="overlay-text">Frame-lody</div> -->
-                <button class="play-button" id="play-button">⏸</button>
+                <!--<button class="play-button" id="play-button">⏸</button>-->
                 <button class="fullscreen-button" id="fullscreen-button">
                     <img src="{% static 'img/adjust/fullscreen icon.svg' %}">
                 </button>
@@ -55,16 +55,19 @@
                 <a class="ok-button"
                    href="{% url 'select_mode' task_id=task_id order=order_id %}">更改動畫樣式</a>
                 <div class="color-selection">
-                    {% for color in segment.color %}
-                        <label for="color{{ forloop.counter }}">{{ color }}</label>
-                        <br>
-                        <input type="color"
-                               id="color{{ forloop.counter }}"
-                               name="color{{ forloop.counter }}"
-                               value="{{ color }}"
-                               onchange="updateLabel('color{{ forloop.counter }}')">
-                        <br>
-                    {% endfor %}
+                    {% comment %} {% if segment.sketch != "mySketch2.js" and segment.sketch != "mySketch5.js" and segment.sketch != "mySketch11.js" and segment.sketch != "mySketch13.js" %} {% endcomment %}
+                    <div class="color-selection">
+                        {% for color in segment.color %}
+                            <label for="color{{ forloop.counter }}">{{ color }}</label>
+                            <br>
+                            <input type="color"
+                                   id="color{{ forloop.counter }}"
+                                   name="color{{ forloop.counter }}"
+                                   value="{{ color }}"
+                                   onchange="updateLabel('color{{ forloop.counter }}')">
+                            <br>
+                        {% endfor %}
+                    </div>
                 </div>
                 <div class="speed-control">
                     <label for="speed">速度</label>
@@ -78,6 +81,22 @@
                            value="segment.bpm">
                     <output id="speedValue">BPM: {{ segment.bpm }}</output>
                 </div>
+                {% if segment.should_display_color %}
+                    <style>
+                    .color-selection {
+                        visibility: hidden;
+                        height: auto;
+                    }
+                    </style>
+                {% endif %}
+                {% if segment.should_display_bpm %}
+                    <style>
+                    .speed-control {
+                        visibility: hidden;
+                        height: auto;
+                    }
+                    </style>
+                {% endif %}
                 <a class="ok-button" href="{% url 'music_part' task_id=task_id %}">ok</a>
             </div>
         </div>

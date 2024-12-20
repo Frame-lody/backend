@@ -16,22 +16,22 @@ window.sketch = function(p) {
 p.setup = function() {
   myGraphices = [];
   myGraphices2 = [];
-  canvas = p.createCanvas(800, 800);
-  graphics = p.createGraphics(100, 100);
-  canvas.position((window.innerWidth - p.width) / 2, (window.innerHeight - p.height) / 2);
+  canvas = p.createCanvas(p.windowWidth*1.4, p.windowHeight*1.4);
+  graphics = p.createGraphics(p.windowWidth, p.windowHeight);
+  canvas.position((p.windowWidth - p.width) / 2, (p.windowHeight - p.height) / 2);
   palette = changeColors!=0?changeColors:p.shuffle(p.random(colorScheme).colors,true);
   // canvas.hide();
   let offset = p.max(p.width, p.height) / 15;
   let x = offset;
   let y = offset;
-  let d = p.max(p.width, p.height) - offset * 2;
+  let d = p.max(p.width, p.height) - offset ;
   let minD = d / 5;
   p.separateGrid(x, y, d, minD, myGraphices);
   p.separateGrid(0, 0, graphics.width, graphics.width / 3, myGraphices2);
 }
 
 p. windowResized = function() {
-  canvas.position((window.innerWidth - p.width) / 2, (window.innerHeight - p.height) / 2);
+  canvas.position((p.windowWidth - p.width) / 2, (p.windowHeight - p.height) / 2);
 }
 
 p.separateGrid = function(x, y, d, minD, arr) {

@@ -10,6 +10,11 @@
   console.log(changeColors);
   console.log("=================");
 
+
+  let  currentColor = "#000000";
+  let lastColorChangeTime = 0;
+  const colorChangeInterval = 5000;
+
   let set1 = [
     '🤨',
     '🤓',
@@ -78,7 +83,7 @@
       emojis = allsets[index];
       initializeEmojiStates();
       startTime = p.millis();
-      setInterval(autoChange, 10000 / (movingSpeed * 1.5)); // 每隔10秒自動切換
+      setInterval(autoChange, 10000 / (movingSpeed * 1.5)); // 每隔10秒自動切換(畫面切換)
     }
 
     function initializeEmojiStates() {
@@ -111,14 +116,22 @@
     }
 
     function drawCrowd() {
-      // 判斷顏色是否為空陣列
-      if (changeColors.length > 0) {
-        // 如果changeColors不為空，則使用陣列中的顏色
-        p.background(p.random(changeColors)); // 隨機使用其中一種顏色做為背景
-      } else {
-        // 如果changeColors為空，則回到預設背景顏色
-        p.background(0); // 預設黑色背景
+      // // 判斷顏色是否為空陣列
+      // if (changeColors.length > 0) {
+      //   // 如果changeColors不為空，則使用陣列中的顏色
+      //   p.background(p.random(changeColors)); // 隨機使用其中一種顏色做為背景
+      // } else {
+      //   // 如果changeColors為空，則回到預設背景顏色
+      //   p.background(0); // 預設黑色背景
+      // }
+
+      let clTimes = p.millis() ;
+      //每十秒更換一次顏色
+      if(clTimes - lastColorChangeTime >= colorChangeInterval){
+        currentColor = p.random(changeColors);
+        lastColorChangeTime = clTimes;
       }
+      p.background(currentColor);  //使用當前顏色作為背景
 
       let currentTime = p.millis() - startTime;
       for (let i = 0; i < emojiStates.length; i++) {

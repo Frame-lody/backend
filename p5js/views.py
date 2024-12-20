@@ -21,12 +21,22 @@ def test(request):
 def adjust(request, task_id, order):
     task_status = get_object_or_404(TaskStatus, task_id=task_id)
     segment = get_object_or_404(Segment, order=order, task_status=task_status)
+    exclude_sketches_bpm = ["mySketch2.js", "mySketch5.js", "mySketch11.js", "mySketch13.js"]
+    exclude_sketches_color = ["mySketch4.js", "mySketch9.js", "mySketch10.js"]
+
+
+
+    segment.should_display_color = segment.sketch in exclude_sketches_color
+    segment.should_display_bpm = segment.sketch in exclude_sketches_bpm
+
     # 傳遞 `task_status` 和 `segments` 給模板
     context = {
         'task_status': task_status,
         'segment': segment,
         'task_id': task_id,
-        'order_id': order
+        'order_id': order,
+        'exclude_sketches_color': exclude_sketches_color,
+        'exclude_sketches_bpm': exclude_sketches_bpm
     }
     return render(request, 'adjust.html', context)
 

@@ -31,18 +31,25 @@ function modelLoaded() {   //顯示pose model已經準備就緒
 }
 
 function gotPoses(results) {
+  // console.log(poses);
   poses = results;
-
+  let wristX = 0
   if (poses.length > 0) {
     for (let i = 0; i < poses.length; i++) {
       pose = poses[i];
       window.nose = (pose.left_shoulder+pose.right_shoulder)/2;
-      window.hand = createVector(pose.right_wrist.x, pose.right_wrist.y);
-      //console.log(pose.right_elbow);
-      // 左右反轉節點
-      // window.nose = createVector(width - pose.nose.x, pose.nose.y);
-      // window.hand = createVector(width - pose.right_wrist.x, pose.right_wrist.y);
-    } } }
+      if(pose.right_wrist.x<200){
+        wristX = pose.right_wrist.x+100
+      }else{
+        wristX = 0.5*pose.right_wrist.x-180
+
+      }
+      window.hand = createVector(wristX, pose.right_wrist.y);
+
+     // console.log(pose.right_wrist.x);
+    }
+  }
+}
 
 function draw() {
     background(0);

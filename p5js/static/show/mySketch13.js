@@ -105,8 +105,8 @@
 
       let body_position = window.hand || window.nose || { x: p.width / 2, y: p.height / 2 };
       // 反轉 x 坐標
-      // let adjustedX = p.width - body_position.x;
-      let adjustedX = body_position.x +150;
+      let adjustedX = p.width - body_position.x*2.5-300;
+      //let adjustedX = body_position.x +150;
       let adjustedY = 1*body_position.y-150;
 
       p.update();

@@ -41,8 +41,10 @@ def calculate_hue_value(valence, arousal):
     # 設置基準色相映射
     if 0 <= angle < 90:  # 第一象限 (橘紅色為基準)
         hue = 45 - (angle / 90) * (45 - 30)  # 線性插值
-    elif 90 <= angle < 180:  # 第二象限 (藍色為基準)
-        hue = 30 - (angle - 90) * (8 / 3)
+    elif 90 <= angle < 120:  # 第二象限 (藍色為基準)
+        hue = 30 - (angle - 90)
+    elif 120 <= angle < 180:  # 第二象限
+        hue = 360 - (angle - 120) * (9/6)
     elif 180 <= angle < 270:  # 第三象限 (綠藍色為基準)
         hue = 270 - ((angle - 180) / 90) * (270 - 180)
     elif 270 <= angle < 360:  # 第四象限 (黃色為基準)
@@ -110,8 +112,8 @@ genre_to_sketch = {
     "Indie Rock": [1, 4, 7, 18],
     "Electronic": [1, 7],
     "Electronica": [1, 7],
-    "Female Vocalists": [10, 12],
-    "Female Vocalist": [10, 12],
+    # "Female Vocalists": [10, 12],
+    # "Female Vocalist": [10, 12],
     "Jazz": [6, 8, 10, 12],
     "Soul": [6, 9, 10, 12, 14],
     "Instrumental": [8, 14],
@@ -160,7 +162,7 @@ def get_random_sketch(genre):
 def get_combined_sketch(final_4_tags):
     """根據前三個標籤的數字範圍進行整合並返回隨機生成的 sketch 文件"""
     # 選前四個標籤
-    selected_genres = final_4_tags[:4]
+    selected_genres = final_4_tags[:2]
 
     # 收集所有數字範圍並去重
     combined_numbers = set()
@@ -294,6 +296,7 @@ def long_running_task(self, musicid, user_id, music_name):
         color_result = generate_complementary_colors(mean_hex_values, median_hue, mean_hue)
         # 添加原始顏色至結果
         color_result.insert(0, hex_value)
+        print("顏色結果：")
         print(color_result)
         task_status.result = color_result
         ''' color_result - ['#ff0000', '#ffff00', '#00ff00'] '''
@@ -313,9 +316,9 @@ def long_running_task(self, musicid, user_id, music_name):
 
         # 定義要取出的標籤索引
         selected_indices = [
-            0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11,
+            0, 1, 2, 3, 4, 6, 8, 9, 10, 11,
             12, 14, 15, 16, 17, 18, 20, 22, 23, 24,
-            26, 27, 28, 29, 30, 31, 32, 33, 35, 36, 37,
+            26, 27, 28, 29, 30, 32, 33, 35, 36, 37,
             39, 40, 41, 42, 43, 45, 46, 47, 48, 49
         ]
 
@@ -325,9 +328,9 @@ def long_running_task(self, musicid, user_id, music_name):
 
         # 定義標籤名稱對應的列表
         tags = [
-            "Rock", "Pop", "Alternative", "Indie", "Electronic", "Female Vocalists", "Dance", "Alternative Rock", "Jazz", "Beautiful", "Metal",
+            "Rock", "Pop", "Alternative", "Indie", "Electronic", "Dance", "Alternative Rock", "Jazz", "Beautiful", "Metal",
             "Chillout", "Classic Rock", "Soul", "Indie Rock", "Mellow", "Electronica", "Folk", "Chill", "Instrumental", "Punk",
-            "Blues", "Hard Rock", "Ambient", "Acoustic", "Experimental", "Female Vocalist", "Guitar", "Hip-Hop", "Party", "Country", "Easy Listening",
+            "Blues", "Hard Rock", "Ambient", "Acoustic", "Experimental", "Guitar", "Hip-Hop", "Party", "Country", "Easy Listening",
             "Catchy", "Funk", "Electro", "Heavy Metal", "Progressive Rock", "Rnb", "Indie Pop", "Sad", "House", "Happy"
         ]
 

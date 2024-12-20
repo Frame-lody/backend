@@ -12,7 +12,7 @@
 
     let particles = [];
     let starGraphics;
-    // let colors = 0 ; // 設定顏色
+    let colors = changeColors ; // 設定顏色
 
     window.sketch = function(p) {
         p.setup = function() {
