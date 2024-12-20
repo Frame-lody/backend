@@ -5,11 +5,15 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.serializers import serialize
 import json
+import ast
 
 import logging
 logger = logging.getLogger(__name__)
 
 # Create your views here.
+
+def processing(request):
+    return render(request, 'processing.html', locals())
 
 def test(request):
     return render(request, 'test.html', locals())
@@ -48,12 +52,14 @@ def select_mode(request, task_id, order):
 def music_part(request, task_id):
     task_id = task_id
     task_status = get_object_or_404(TaskStatus, task_id=task_id) # 取得 task_id 對應的 TaskStatus 物件
-
     # 如果狀態不是 'completed'，顯示處理中的頁面
     if task_status.status == 'FAILED':
         return redirect('task_status')
     elif task_status.status != 'COMPLETED':
         return render(request, 'processing.html')
+
+    # 使用 ast.literal_eval 解析成列表
+    task_status.genre = ast.literal_eval(task_status.genre)
 
     # 查詢對應的 Segment 資料，按順序排列
     segments = task_status.segments.all()  # 使用 `related_name` 取得段落資料
@@ -70,12 +76,14 @@ def music_part(request, task_id):
 def show(request, task_id):
     task_id = task_id
     task_status = get_object_or_404(TaskStatus, task_id=task_id) # 取得 task_id 對應的 TaskStatus 物件
-
     # 如果狀態不是 'completed'，顯示處理中的頁面
     if task_status.status == 'FAILED':
         return redirect('task_status')
     elif task_status.status != 'COMPLETED':
-        return render(request, 'processing.html')
+        return render(request, 'processing.html', {'task_id': task_id})
+
+    # 使用 ast.literal_eval 解析成列表
+    task_status.genre = ast.literal_eval(task_status.genre)
 
     # 查詢對應的 Segment 資料，按順序排列
     segments = task_status.segments.all()  # 使用 `related_name` 取得段落資料
@@ -90,6 +98,14 @@ def show(request, task_id):
     }
 
     return render(request, 'show.html', context)
+
+
+def check_task_status(request, task_id):
+    task_status = get_object_or_404(TaskStatus, task_id=task_id)
+    return JsonResponse({
+        'status': task_status.status,
+        'genre': task_status.genre,
+    })
 
 def pay(request, task_id):
     task_status = get_object_or_404(TaskStatus, task_id=task_id) # 取得 task_id 對應的 TaskStatus 物件

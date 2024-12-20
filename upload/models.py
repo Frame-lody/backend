@@ -8,8 +8,9 @@ from django.utils import timezone
 class TaskStatus(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True) # 這個音樂是哪個使用者上傳的
     task_id = models.CharField(max_length=255, unique=True, primary_key=True)
-    music_name = models.CharField(max_length=255, null=True)
-    music_url = models.URLField(max_length=255, null=True)
+    music_name = models.CharField(max_length=255, null=True) # 用來儲存音樂檔案的名稱
+    music_url = models.URLField(max_length=255, null=True) # 用來儲存音樂檔案的路徑
+    music_url_web = models.URLField(max_length=255, null=True) # 用來儲存網頁上的音樂連結
     status = models.CharField(max_length=50)
     result = models.JSONField(null=True, blank=True)
     bpm = models.FloatField(null=True, blank=True)

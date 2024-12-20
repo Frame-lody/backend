@@ -16,4 +16,6 @@ urlpatterns = [
     path('update-segment-color/', views.update_segment_color, name='update_segment_color'),
     path('update-sketch/', views.update_sketch, name='update_sketch'),
     path('update-bpm/', views.update_bpm, name='update_bpm'),
+    path('check_task_status/<str:task_id>/', views.check_task_status, name='check_task_status'),
+    path('processing/', views.processing, name='processing'),
 ]

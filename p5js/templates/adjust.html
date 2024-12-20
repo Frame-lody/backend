@@ -165,6 +165,8 @@
 
             // 加載音樂文件
             const musicUrl = "{{ task_status.music_url }}"; // 替換為你的音頻 URL
+            console.log('musicUrl');
+            console.log(musicUrl);
             loadAudioFile(musicUrl);
 
             // 將 segment 的 start 和 end 屬性綁定到按鈕

@@ -51,7 +51,16 @@ function updateIframe(sketchName, speed, color) {
             <div class="content-section">
                 <div class="preview-section">
                     <div>
-                        <p>偵測主要曲風: {{ task_status.genre }}</p>
+                        <p>偵測主要曲風:</p>
+                        <div style="display: flex; gap: 10px;">
+                            {% for genre in task_status.genre %}
+                                <div style="border: 1px solid #ccc;
+                                            padding: 10px;
+                                            border-radius: 5px;
+                                            background-color: #f9f9f9;
+                                            color: #333">{{ genre }}</div>
+                            {% endfor %}
+                        </div>
                         <p>速度: {{ task_status.bpm }}</p>
                     </div>
                     <div class="preview-title">預覽動畫</div>

@@ -43,6 +43,12 @@
         background-color: #2D4889;
         color: white;
     }
+    td {
+        max-width: 150px; /* 限制單元格寬度 */
+        white-space: nowrap; /* 防止文字換行 */
+        overflow: hidden; /* 隱藏溢出的文字 */
+        text-overflow: ellipsis; /* 使用省略號 */
+    }
     a {
         color: #2FA2B8;
         text-decoration: none;
@@ -111,27 +117,35 @@
                 <thead>
                     <tr>
                         <th>音樂名稱</th>
-                        <th>任務 ID</th>
+                        {% comment %} <th>任務 ID</th> {% endcomment %}
                         <th>狀態</th>
-                        <th>結果</th>
+                        <th>曲風</th>
+                        <th>速度</th>
                         <th>創建時間</th>
-                        <th>修改時間</th>
                         <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for task in tasks %}
                         <tr>
-                            <td>
-                                <a href="{{ task.music_url }}">{{ task.music_name }}</a>
+                            <td title="{{ task.music_name }}">
+                                {% comment %} <a href="{{ task.music_url }}">{{ task.music_name }}</a> {% endcomment %}
+                                <a href="{% url 'music_part' task.task_id %}">{{ task.music_name }}</a>
                             </td>
-                            <td>
+                            {% comment %} <td>
                                 <a href="{% url 'music_part' task.task_id %}">{{ task.task_id }}</a>
-                            </td>
+                            </td> {% endcomment %}
                             <td>{{ task.status }}</td>
-                            <td>{{ task.result }}</td>
+                            {% comment %} <td title="{{ task.genre }}">{{ task.genre }}</td> {% endcomment %}
+                            <td>
+                                <span style="border: 1px solid #ccc;
+                                             padding: 10px;
+                                             border-radius: 5px;
+                                             background-color: #f9f9f9;
+                                             color: #333">{{ task.genre.0 }}</span>
+                            </td>
+                            <td>{{ task.bpm }}</td>
                             <td>{{ task.date_created }}</td>
-                            <td>{{ task.date_modified }}</td>
                             <td>
                                 <form method="post" style="display:inline;">
                                     {% csrf_token %}

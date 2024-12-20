@@ -1,42 +1,98 @@
 {% extends 'base_generic.html' %}
-
 {% block title %}
-<title>選擇音檔</title>
-{% endblock %}
-
+    <title>選擇音檔</title>
+{% endblock title %}
 {% block head %}
-{% load static %}
-<link rel="stylesheet" href="{% static 'css/select_music.css'%}">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/select_music.css' %}">
 {% endblock head %}
-
 {% block content %}
-<div class="center" data-aos="fade-up" data-aos-easing="ease">
-    <div class="container">
-        <div class="progress-bar-framelody ">
-            <div class="step completed" id="step1">1</div>
-            <div class="divider" id="divider1"></div>
-            <div class="step" id="step2">2</div>
-            <div class="divider" id="divider2"></div>
-            <div class="step" id="step3">3</div>
-            <div class="divider" id="divider3"></div>
-            <div class="step" id="step4">4</div>
-        </div>
-        <h1>選擇音檔</h1>
-        <form action="/upload/" method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="file-select">
-                <div class="file-icon">
-                    <img src="{% static 'img/game-icons_sound-waves.svg' %}" alt="sound-waves" class="icon">
-                    {% comment %} <img src="{% static 'img/button.svg' %}" alt="plus icon" class="plus-icon"> {% endcomment %}
-                    <input type="file" name="file" accept=".mp3, .wav" required />
-                    <img src="{% static 'img/game-icons_sound-waves.svg' %}" alt="sound-waves" class="icon">
-                </div>
+    <div class="center" data-aos="fade-up" data-aos-easing="ease">
+        <div class="container">
+            <div class="progress-bar-framelody ">
+                <div class="step completed" id="step1">1</div>
+                <div class="divider" id="divider1"></div>
+                <div class="step" id="step2">2</div>
+                <div class="divider" id="divider2"></div>
+                <div class="step" id="step3">3</div>
+                <div class="divider" id="divider3"></div>
+                <div class="step" id="step4">4</div>
             </div>
-            {% comment %} <input type="submit" class="confirm-button" onclick="updateProgress()" value="開始上傳" /> {% endcomment %}
-            <input type="submit" class="confirm-button" value="開始上傳" />
-        </form>
+            <h1>選擇音檔</h1>
+            <form action="/upload/"
+                  method="POST"
+                  enctype="multipart/form-data"
+                  id="upload-form">
+                {% csrf_token %}
+                <label for="upload_option">選擇上傳方式:</label>
+                <input type="radio"
+                       name="upload_option"
+                       value="file"
+                       id="file_option"
+                       checked />
+                上傳音檔
+                <input type="radio" name="upload_option" value="youtube" id="youtube_option" />
+                下載 YouTube 音檔
+                <div id="file_upload" class="file-select">
+                    <div class="file-icon">
+                        <img src="{% static 'img/game-icons_sound-waves.svg' %}"
+                             alt="sound-waves"
+                             class="icon">
+                        <input type="file" name="file" accept=".mp3, .wav" />
+                        <img src="{% static 'img/game-icons_sound-waves.svg' %}"
+                             alt="sound-waves"
+                             class="icon">
+                    </div>
+                </div>
+                <div id="youtube_url" class="upload-option" style="display: none;">
+                    <input type="text"
+                           name="youtube_url"
+                           placeholder="輸入 YouTube 連結"
+                           class="form-control"
+                           style="width:500px" />
+                </div>
+                <input type="submit" class="confirm-button" value="開始上傳" />
+            </form>
+            <!-- 加載中提示訊息 -->
+            <div id="loading-message" style="display: none;">
+                <p>處理中，請稍候...</p>
+            </div>
+        </div>
     </div>
-</div>
+    <script src="{% static 'js/select_music.js' %}"></script>
+    <script>
+        // 等待頁面加載完成後綁定事件
+        window.addEventListener('DOMContentLoaded', function() {
+            // 綁定 upload_option radio 按鈕的變更事件
+            document.querySelectorAll('input[name="upload_option"]').forEach(function(element) {
+                element.addEventListener('change', function() {
+                    // 檢查選擇的上傳方式
+                    if (document.getElementById('youtube_option').checked) {
+                        document.getElementById('file_upload').style.display = 'none';
+                        document.getElementById('youtube_url').style.display = 'flex';
+                    } else {
+                        document.getElementById('file_upload').style.display = 'block';
+                        document.getElementById('youtube_url').style.display = 'none';
+                    }
+                });
+            });
 
-<script src="{% static 'js/select_music.js' %}"></script>
+            // 預設情況下，檢查選擇的按鈕並設置顯示/隱藏
+            if (document.getElementById('youtube_option').checked) {
+                document.getElementById('file_upload').style.display = 'none';
+                document.getElementById('youtube_url').style.display = 'flex';
+            } else {
+                document.getElementById('file_upload').style.display = 'block';
+                document.getElementById('youtube_url').style.display = 'none';
+            }
+        });
+            // 監聽表單提交
+    document.getElementById('upload-form').addEventListener('submit', function(event) {
+        // 顯示 "處理中，請稍候..."
+        document.getElementById('loading-message').style.display = 'block';
+
+        // 隱藏表單（防止再次提交）
+        document.getElementById('upload-form').style.display = 'none';
+    });
+    </script>
 {% endblock content %}

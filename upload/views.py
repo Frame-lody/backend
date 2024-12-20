@@ -17,25 +17,98 @@ from .forms import UploadFileForm
 from .models import TaskStatus, music
 from .tasks import long_running_task
 
+from yt_dlp import YoutubeDL
+import urllib.parse
+import ast
 # from celery.task.control import revoke
 
-
-@login_required
 def upload(request):
-    # 如果是POST請求，就處理表單資料
-    if request.method=="POST":
-        uploaded_file = request.FILES['file']
-        fss = FileSystemStorage()
-        file = fss.save(uploaded_file.name, uploaded_file)
-        file_url = fss.url(file)
-        # 將音樂分析資訊存到資料庫
-        user_id = request.user.id
-        task = long_running_task.delay(musicid=file, user_id=user_id, music_name=file)
-        TaskStatus.objects.create(user=request.user, task_id=task.id, status='PENDING', music_name=file, music_url=file_url)
+    if request.method == "POST":
+        upload_option = request.POST.get("upload_option")
+
+        # 若選擇的是 YouTube 音檔
+        if upload_option == "youtube":
+            youtube_url = request.POST.get("youtube_url")
+            # 使用 yt-dlp 下載音檔
+            music_file_path, music_file_path_web, music_name = download_youtube_audio(youtube_url)
+            # music_name = os.path.basename(music_file_path)
+            file_url = settings.MEDIA_URL + music_name
+
+            # 將音樂分析資訊存入資料庫
+            user_id = request.user.id
+            task = long_running_task.delay(musicid=music_file_path, user_id=user_id, music_name=music_name)
+            TaskStatus.objects.create(user=request.user, task_id=task.id, status='PENDING', music_name=music_name, music_url=file_url, music_url_web=music_file_path_web)
+
+        # 若選擇的是上傳檔案
+        elif upload_option == "file":
+            uploaded_file = request.FILES['file']
+            fss = FileSystemStorage()
+            file = fss.save(uploaded_file.name, uploaded_file)
+            file_url = fss.url(file)
+
+            # 將音樂分析資訊存入資料庫
+            user_id = request.user.id
+            task = long_running_task.delay(musicid=file, user_id=user_id, music_name=file)
+            TaskStatus.objects.create(user=request.user, task_id=task.id, status='PENDING', music_name=file, music_url=file_url, music_url_web=file_url)
+
         return redirect(reverse('show', kwargs={'task_id': task.id}))
-    # 將所有media資料夾裡的檔案列出來
+
+    # 顯示所有 media 資料夾中的檔案
     mediafiles = os.listdir(settings.MEDIA_ROOT)
     return render(request, "select_music.html", locals())
+
+def download_youtube_audio(youtube_url, output_dir=settings.MEDIA_ROOT):
+    try:
+        # 確保輸出目錄存在
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        # 設定 yt-dlp 下載選項
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'outtmpl': os.path.join(output_dir, '%(title)s'),  # 檔名使用視頻標題
+            'postprocessors': [
+                {
+                    'key': 'FFmpegExtractAudio',
+                    'preferredcodec': 'mp3',
+                    'preferredquality': '320',
+                },
+            ],
+        }
+
+        with YoutubeDL(ydl_opts) as ydl:
+            ydl.download([youtube_url])
+
+        # 取得下載的檔案名（假設檔案名稱為 video_title.mp3）
+        info_dict = ydl.extract_info(youtube_url, download=False)
+        file_name = f"{info_dict['title']}.mp3"
+
+        # URL 編碼檔名
+        encoded_file_name = urllib.parse.quote(file_name)
+
+        # 回傳 URI 格式的下載路徑
+        return os.path.join(output_dir, file_name), os.path.join(output_dir, encoded_file_name), file_name
+
+    except Exception as e:
+        print(f"下載時發生錯誤：{e}")
+        return None
+
+# @login_required
+# def upload(request):
+#     # 如果是POST請求，就處理表單資料
+#     if request.method=="POST":
+#         uploaded_file = request.FILES['file']
+#         fss = FileSystemStorage()
+#         file = fss.save(uploaded_file.name, uploaded_file)
+#         file_url = fss.url(file)
+#         # 將音樂分析資訊存到資料庫
+#         user_id = request.user.id
+#         task = long_running_task.delay(musicid=file, user_id=user_id, music_name=file)
+#         TaskStatus.objects.create(user=request.user, task_id=task.id, status='PENDING', music_name=file, music_url=file_url)
+#         return redirect(reverse('show', kwargs={'task_id': task.id}))
+#     # 將所有media資料夾裡的檔案列出來
+#     mediafiles = os.listdir(settings.MEDIA_ROOT)
+#     return render(request, "select_music.html", locals())
 
 @login_required
 def task_status(request):
@@ -52,6 +125,9 @@ def task_status(request):
         return redirect('task_status')
     user_id = request.user.id
     tasks = TaskStatus.objects.filter(user_id=user_id)
+    for task_status in tasks:
+        if task_status.genre:
+            task_status.genre = ast.literal_eval(task_status.genre)
     return render(request, 'status.html', {'tasks': tasks})
 
 # def readFile(request, musicid):

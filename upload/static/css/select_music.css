@@ -41,7 +41,7 @@
 
 .file-select {
     width: 500px;
-    height: 140px;
+    /* height: 140px; */
     border: 2px solid #cccccc;
     border-radius: 10px;
     margin: 20px auto;
@@ -56,6 +56,12 @@
 
 .file-select:hover {
     background-color: rgba(255, 255, 255, 0.2);
+}
+
+#youtube_url {
+    display: none;
+    justify-content: center;
+    margin: 20px auto;
 }
 
 .file-icon {
