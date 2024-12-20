@@ -199,7 +199,7 @@ p.preload = function(){
 }
 
 p.setup = function() {
-  p.createCanvas(p.windowWidth, p.windowHeight);
+  p.createCanvas(window.innerWidth, window.innerHeight);
   webGLCanvas = p.createGraphics(p.width, p.height, p.WEBGL);
   originalGraphics = p.createGraphics(p.width, p.height);
   p.noStroke();
@@ -277,7 +277,7 @@ function drawGlowingCircle(pg, x, y, size) {
 }
 
 p.windowResized = function() {
-	p.resizeCanvas(p.windowWidth, p.windowHeight);
+	p.resizeCanvas(window.innerWidth, window.innerHeight);
   };
 
 };

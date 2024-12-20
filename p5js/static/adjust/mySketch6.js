@@ -49,7 +49,7 @@
           this.pos = p.createVector(x, y);
           this.vel = p5.Vector.random2D().mult(speed);
           this.acc = p.createVector(0, 0);
-          this.size = p.random(50, 150);
+          this.size = p.random(p.width*0.04,p.width*0.1);
           this.colors = p.shuffle(changeColors!=0?changeColors.concat():palette.concat());
           this.rs = p.int(p.random(10000));
           this.alpha = 0; // 初始透明度

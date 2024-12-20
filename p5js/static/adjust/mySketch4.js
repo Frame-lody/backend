@@ -9,9 +9,7 @@
   console.log(changeColors);
   console.log("=================");
 
-  let colors = ["#F8907C",
-	"#FFC2A7",
-	"#4AD0E8"];
+  let colors = [];
 
     // 將顏色轉換為 vec3
   function hexToVec3(hex) {

@@ -18,7 +18,7 @@ p.setup = function() {
   myGraphices2 = [];
   canvas = p.createCanvas(800, 800);
   graphics = p.createGraphics(100, 100);
-  canvas.position((p.windowWidth - p.width) / 2, (p.windowHeight - p.height) / 2);
+  canvas.position((window.innerWidth - p.width) / 2, (window.innerHeight - p.height) / 2);
   palette = changeColors!=0?changeColors:p.shuffle(p.random(colorScheme).colors,true);
   // canvas.hide();
   let offset = p.max(p.width, p.height) / 15;
@@ -31,7 +31,7 @@ p.setup = function() {
 }
 
 p. windowResized = function() {
-  canvas.position((p.windowWidth - p.width) / 2, (p.windowHeight - p.height) / 2);
+  canvas.position((window.innerWidth - p.width) / 2, (window.innerHeight - p.height) / 2);
 }
 
 p.separateGrid = function(x, y, d, minD, arr) {

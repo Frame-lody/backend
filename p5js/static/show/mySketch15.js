@@ -17,7 +17,7 @@
 
     window.sketch = function(p) {
       p.setup = function() {
-        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.createCanvas(window.innerWidth, window.innerHeight);
         p.noStroke();
 
         rain = new Rain(100);
@@ -126,7 +126,7 @@
       }
 
       p.windowResized = function() {
-        p.resizeCanvas(p.windowWidth, p.windowHeight);
+        p.resizeCanvas(window.innerWidth, window.innerHeight);
       };
     };
   })();

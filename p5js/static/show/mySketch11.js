@@ -7,7 +7,7 @@
 
   window.sketch = function(p) {
     p.setup = () => {
-      p.createCanvas(p.windowWidth, p.windowHeight);
+      p.createCanvas(window.innerWidth, window.innerHeight);
       for (let i = num; i--;) {
         balls.push({
           mass: p.random(massMin, massMax),
@@ -79,7 +79,7 @@
     };
 
     p.windowResized = function() {
-      p.resizeCanvas(p.windowWidth, p.windowHeight);
+      p.resizeCanvas(window.innerWidth, window.innerHeight);
     };
   };
 })();

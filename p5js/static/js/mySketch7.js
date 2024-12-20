@@ -47,7 +47,7 @@ float arrow(vec2 uv) {
 
     float d2 = sdBox(uv - vec2(0.,-h), vec2(0.05,0.2));
     float s2 = 1.-smoothstep(-0.5,0.5,d2);
-    
+
     s += s2;
     return s;
 }
@@ -62,7 +62,7 @@ float h21 (vec2 a) {
 }
 
 vec2 rot(vec2 uv, float a) {
-    mat2 mat = mat2(cos(a), -sin(a), 
+    mat2 mat = mat2(cos(a), -sin(a),
                     sin(a), cos(a));
     return mat * uv;
 }
@@ -70,14 +70,14 @@ vec2 rot(vec2 uv, float a) {
 void main( )
 {
     vec2 uv = (gl_FragCoord.xy-1.0*u_resolution.xy)/u_resolution.y;
-		
+
     float a = atan(uv.y, uv.x);
     float r = log(length(uv));
     a = 2. *a;
     float l = min(1., atan(0.2 * u_time)/0.95);
     r *= 0.6 + 0.25 * l * thc(1., 3. * a + 2. * length(uv) - u_time);
 
-    float h = 1.+floor(0.25 * fract(0.1 * u_time)); 
+    float h = 1.+floor(0.25 * fract(0.1 * u_time));
 		a = h * a;
     uv = rot(uv, u_time +  2. * a + 6.1415 * sin(3. * r + a - u_time));
 
@@ -135,7 +135,7 @@ p.setup = function() {
 p.draw = function() {
   // shader() sets the active shader with our shader
   p.shader(theShader);
-  
+
   theShader.setUniform("u_resolution", [p.width, p.height]);
 	theShader.setUniform("u_time", p.millis() / 1000.0 * movingSpeed); //u_time 可用來改變變動速度 ex:millis() / 1000.0*0.5會變慢
   theShader.setUniform("u_frame", p.frameCount/1.0);

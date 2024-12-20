@@ -63,7 +63,7 @@
 
   window.sketch = function(p) {
     p.setup = function() {
-      p.createCanvas(p.windowWidth, p.windowHeight);
+      p.createCanvas(window.innerWidth, window.innerHeight);
       p.textAlign(p.CENTER, p.CENTER);
       allsets = [set1, set2, p.concat(set1, set2)];
       emojis = allsets[index];
@@ -154,7 +154,7 @@
     }
 
     p.windowResized = function() {
-      p.resizeCanvas(p.windowWidth, p.windowHeight);
+      p.resizeCanvas(window.innerWidth, window.innerHeight);
     };
   };
 })();

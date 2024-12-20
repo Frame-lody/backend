@@ -170,7 +170,7 @@ p.preload = function(){
 }
 
 p.setup  = function() {
-	p.createCanvas(p.windowWidth, p.windowHeight, WEBGL);
+	p.createCanvas(window.innerWidth, window.innerHeight, WEBGL);
 	p.noStroke()
 	p.background(100);
 	p.mouseX = p.width/2;
@@ -199,7 +199,7 @@ p.draw = function() {
 }
 
 p.windowResized = function() {
-	p.resizeCanvas(p.windowWidth, p.windowHeight);
+	p.resizeCanvas(window.innerWidth, window.innerHeight);
   };
 
 }

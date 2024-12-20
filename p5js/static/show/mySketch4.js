@@ -1,7 +1,5 @@
 (function() {
-  let colors = ["#F8907C",
-	"#FFC2A7",
-	"#4AD0E8"];
+  let colors = [];
 
     // 將顏色轉換為 vec3
   function hexToVec3(hex) {
@@ -191,7 +189,7 @@
 
   window.sketch = function(p) {
     p.setup = function() {
-      p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
+      p.createCanvas(window.innerWidth, window.innerHeight, p.WEBGL);
       const gl = p._renderer.GL;
 
       const vertShader = gl.createShader(gl.VERTEX_SHADER);
@@ -258,7 +256,7 @@
     }
 
     p.windowResized = function() {
-      p.resizeCanvas(p.windowWidth, p.windowHeight);
+      p.resizeCanvas(window.innerWidth, window.innerHeight);
     };
 
   }

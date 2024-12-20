@@ -14,10 +14,10 @@ let movingSpeed = speed?speed*0.5:0.5;
 
 window.sketch = function(p) {
 p.setup = function() {
-  p.createCanvas(p.windowWidth, p.windowHeight); // 設定畫布大小為螢幕寬高
+  p.createCanvas(window.innerWidth, window.innerHeight); // 設定畫布大小為螢幕寬高
   p.colorMode(p.HSB, 360, 100, 100, 100);
   p.angleMode(p.DEGREES);
-  p.scaleFactor = p.min(p.windowWidth, p.windowHeight) / 800;
+  p.scaleFactor = p.min(window.innerWidth, window.innerHeight) / 800;
 }
 
 p.draw = function() {
@@ -29,12 +29,12 @@ p.draw = function() {
   t += 1 / 80*movingSpeed;
 
   let num = 5; // 分割數量，可以根據需要調整
-  let d = p.min(p.windowWidth, p.windowHeight);
+  let d = p.min(window.innerWidth, window.innerHeight);
   let w = p.sqrt(sq(d) * 2);
   let totalWidth = w * p.sqrt(2) + d / num;
   let totalHeight = w * p.sqrt(2) + d / num;
-  let xOffset = (p.windowWidth - totalWidth) / 2;
-  let yOffset = (p.windowHeight - totalHeight) / 2;
+  let xOffset = (window.innerWidth - totalWidth) / 2;
+  let yOffset = (window.innerHeight - totalHeight) / 2;
 
   p.herringboneInRect(xOffset, yOffset, totalWidth, totalHeight, num, 1);
 }
@@ -149,7 +149,7 @@ p.easeInOutElastic = function(x) {
 }
 
 p.windowResized = function() {
-  p.resizeCanvas(p.windowWidth, p.windowHeight);
+  p.resizeCanvas(window.innerWidth, window.innerHeight);
 };
 
 let colorScheme = [

@@ -39,7 +39,7 @@ let originalpalette = [
   window.sketch = function(p) {
 
   p.setup = function() {
-	p.createCanvas(p.windowWidth, p.windowHeight);
+	p.createCanvas(window.innerWidth, window.innerHeight);
 	p.colorMode(p.HSB, 360, 100, 100, 100);
 	p.angleMode(p.DEGREES);
 	p.textAlign(p.CENTER, p.CENTER);
@@ -217,7 +217,7 @@ let originalpalette = [
   }
 
   p.windowResized = function() {
-	resizeCanvas(p.windowWidth, p.windowHeight);
+	resizeCanvas(window.innerWidth, window.innerHeight);
   }
 };
 })();

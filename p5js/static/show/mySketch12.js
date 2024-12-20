@@ -22,7 +22,7 @@
 
   window.sketch = function(p) {
     p.setup = function() {
-      p.createCanvas(p.windowWidth, p.windowHeight);
+      p.createCanvas(window.innerWidth, window.innerHeight);
       p.colorMode(p.RGB, 255, 255, 255, 100);
       p.ellipseMode(p.RADIUS);
       p.noStroke();
@@ -108,12 +108,12 @@
       };
 
       this.isAlive = function() {
-        return this.y < p.windowHeight + this.rad;
+        return this.y < window.innerHeight + this.rad;
       };
     }
 
     p.windowResized = function() {
-      p.resizeCanvas(p.windowWidth, p.windowHeight);
+      p.resizeCanvas(window.innerWidth, window.innerHeight);
     };
   };
   })();

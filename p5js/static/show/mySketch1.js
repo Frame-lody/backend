@@ -14,15 +14,15 @@
 
   window.sketch = function(p) {
     p.setup = function() {
-      p.createCanvas(p.windowWidth, p.windowHeight);
+      p.createCanvas(window.innerWidth, window.innerHeight);
       p.colorMode(p.HSB, 360, 100, 100, 100);
       p.angleMode(p.DEGREES);
       palette =changeColors?changeColors:p.random(colorScheme).colors.concat();
       rectangle = new Rectangle(
         0,
         0,
-        p.windowWidth,
-        p.windowHeight,
+        window.innerWidth,
+        window.innerHeight,
         0,
         p.random(["T", "R", "B", "L"])
       );
@@ -312,7 +312,7 @@
     ];
 
     p.windowResized = function() {
-      p.resizeCanvas(p.windowWidth, p.windowHeight);
+      p.resizeCanvas(window.innerWidth, window.innerHeight);
     };
   };
 })();

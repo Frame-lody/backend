@@ -24,7 +24,7 @@ let first = 0;
 window.sketch = function(p) {
 
 p.setup = function() {
-  p.createCanvas(p.windowWidth, p.windowHeight);
+  p.createCanvas(window.innerWidth, window.innerHeight);
   p.noStroke();
   p.background(0);
   p.fill(255);
@@ -96,7 +96,7 @@ p.draw = function() {
 }
 
 p.windowResized = function() {
-    p.resizeCanvas(p.windowWidth, p.windowHeight);
+    p.resizeCanvas(window.innerWidth, window.innerHeight);
 
 };
 

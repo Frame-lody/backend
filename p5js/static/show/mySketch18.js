@@ -13,7 +13,7 @@
 
   window.sketch = function(p) {
     p.setup = function() {
-      p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
+      p.createCanvas(window.innerWidth, window.innerHeight, p.WEBGL);
       cylinderHeight = p.abs(zMin - zMax) / triangleNum;
 
       for (let i = 0; i < triangleNum; i++) {
@@ -77,7 +77,7 @@
     };
 
     p.windowResized = function() {
-      p.resizeCanvas(p.windowWidth, p.windowHeight);
+      p.resizeCanvas(window.innerWidth, window.innerHeight);
     };
   };
 })();

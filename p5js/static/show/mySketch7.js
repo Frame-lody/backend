@@ -81,7 +81,13 @@ vec2 rot(vec2 uv, float a) {
 
 void main( )
 {
-    vec2 uv = (gl_FragCoord.xy-1.0*u_resolution.xy)/u_resolution.y;
+    //vec2 uv = (gl_FragCoord.xy-1.0*u_resolution.xy)/u_resolution.y;
+
+     // 取得畫面解析度的最小值，作為縮放基準
+    float scale = min(u_resolution.x, u_resolution.y);
+
+    // 將畫面坐標 (gl_FragCoord) 轉換為 -1 到 1 的範圍，並置中
+    vec2 uv = (gl_FragCoord.xy - u_resolution ) / scale;
 
     float a = atan(uv.y, uv.x);
     float r = log(length(uv));
@@ -160,10 +166,10 @@ p.preload = function(){
 }
 
 p.setup = function() {
-	mySize = p.min(p.windowWidth, p.windowHeight) * 1.0;
+	mySize = p.min(window.innerWidth, window.innerHeight) * 1.0;
   // shaders require WEBGL mode to work
   // createCanvas(mySize, mySize/16*9, WEBGL);
-  p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
+  p.createCanvas(window.innerWidth, window.innerHeight, p.WEBGL);
   p.noStroke();
 }
 
@@ -171,17 +177,17 @@ p.draw = function() {
   // shader() sets the active shader with our shader
   p.shader(theShader);
 
-  theShader.setUniform("u_resolution", [p.width, p.height]);
+  theShader.setUniform("u_resolution", [window.innerWidth, window.innerHeight]);
 	theShader.setUniform("u_time", p.millis() / 1000.0 * movingSpeed); //u_time 可用來改變變動速度 ex:millis() / 1000.0*0.5會變慢
   theShader.setUniform("u_frame", p.frameCount/1.0);
-  theShader.setUniform("u_mouse", [mouseX/100.0, map(mouseY, 0, p.height, p.height, 0)/100.0]);
+  theShader.setUniform("u_mouse", [mouseX/100.0, map(mouseY, 0, window.innerHeight, window.innerHeight, 0)/100.0]);
 
   // rect gives us some geometry on the screen
-  p.rect(0,0,p.width, p.height);
+  p.rect(0,0,window.innerWidth, window.innerHeight);
 }
 
 p.windowResized = function(){
-  p.resizeCanvas(p.windowWidth, p.windowHeight);
+  p.resizeCanvas(window.innerWidth, window.innerHeight);
 }
 
 }

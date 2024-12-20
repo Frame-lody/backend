@@ -8,7 +8,7 @@
 
     window.sketch = function(p) {
         p.setup = function() {
-            p.createCanvas(p.windowWidth, p.windowHeight);
+            p.createCanvas(window.innerWidth, window.innerHeight);
             starGraphics = p.createGraphics(p.width, p.height);
             p.colorMode(p.HSB);
             p.background(0);
@@ -96,7 +96,7 @@
         };
 
         p.windowResized = function() {
-            p.resizeCanvas(p.windowWidth, p.windowHeight);
+            p.resizeCanvas(window.innerWidth, window.innerHeight);
             starGraphics = p.createGraphics(p.width, p.height);
         };
     };
